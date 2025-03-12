@@ -1,0 +1,26 @@
+{
+	"name": "api-ia-web-app-pm",
+	"version": "1.0.0",
+	"description": "This is a api to connect two projectos (web app pm, ollama-ui and api-ollama)",
+	"keywords": [
+		"api",
+		"ia",
+		"ollama",
+		"deepseek"
+	],
+	"homepage": "https://github.com/sandovaldavid/api-ia-web-app-pm#readme",
+	"bugs": {
+		"url": "https://github.com/sandovaldavid/api-ia-web-app-pm/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sandovaldavid/api-ia-web-app-pm.git"
+	},
+	"license": "SEE LICENSE IN <LICENCE>",
+	"author": "sandovaldavid and MoisesAmen",
+	"type": "commonjs",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	}
+}
