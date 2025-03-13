@@ -3,13 +3,14 @@ const ollamaService = require('../services/ollamaService');
 const promptTemplates = require('../utils/promptTemplates');
 const cacheService = require('../services/cacheService');
 const logger = require('../utils/logger');
+const { AppError } = require('../middlewares/errorHandler');
 
 /**
  * @desc    Assign resources to a task with AI
  * @route   GET /api/resources/assign/:taskId
  * @access  Private
  */
-exports.assignResourceToTask = async (req, res) => {
+exports.assignResourceToTask = async (req, res, next) => {
     try {
         const { taskId } = req.params;
 
@@ -29,10 +30,7 @@ exports.assignResourceToTask = async (req, res) => {
         const task = await djangoService.getTaskById(taskId);
 
         if (!task) {
-            return res.status(404).json({
-                success: false,
-                error: 'Task not found',
-            });
+            return next(new AppError('Task not found', 404));
         }
 
         // Fetch available resources
@@ -55,11 +53,7 @@ exports.assignResourceToTask = async (req, res) => {
         });
     } catch (error) {
         logger.error(`Error assigning resources: ${error.message}`);
-        res.status(500).json({
-            success: false,
-            error: 'Error assigning resources',
-            message: error.message,
-        });
+        next(new AppError(`Error assigning resources: ${error.message}`, 500));
     }
 };
 
