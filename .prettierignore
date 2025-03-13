@@ -1,0 +1,14 @@
+node_modules/
+coverage/
+dist/
+build/
+*.md
+*.min.js
+package-lock.json
+package.json
+.env.*
+.env
+.gitignore
+.eslintrc.js
+.eslintignore
+.prettierrc.js
