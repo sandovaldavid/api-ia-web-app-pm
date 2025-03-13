@@ -1,103 +1,195 @@
 const User = require('../models/User');
-const { AppError } = require('../middlewares/errorHandler');
+const bcrypt = require('bcryptjs');
 const logger = require('../utils/logger');
+const authService = require('../services/authService');
 
 /**
- * @desc    Registrar usuario
+ * @desc    Registrar un nuevo usuario
  * @route   POST /api/users/register
  * @access  Public
  */
-exports.register = async (req, res, next) => {
+exports.register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
         // Verificar si el usuario ya existe
-        let user = await User.findOne({ email });
-
-        if (user) {
-            return next(new AppError('El usuario ya existe', 400));
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            logger.warn(`Intento de registro con email existente: ${email}`);
+            return res.status(400).json({
+                status: 'error',
+                message: 'El correo ya está registrado',
+            });
         }
 
-        // Crear usuario
-        user = await User.create({
-            name,
-            email,
-            password,
-        });
+        // Registrar usuario usando authService
+        const user = await authService.registerUser({ name, email, password });
 
-        sendTokenResponse(user, 201, res);
+        if (user) {
+            logger.info(`Nuevo usuario registrado: ${email}`);
+            res.status(201).json({
+                status: 'success',
+                data: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    token: authService.generateToken(user._id),
+                },
+            });
+        } else {
+            logger.error('Error al crear usuario en la base de datos');
+            res.status(500).json({
+                status: 'error',
+                message: 'Error al crear usuario',
+            });
+        }
     } catch (error) {
-        next(error);
+        logger.error(`Error en registro: ${error.message}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error al registrar usuario',
+            error: error.message,
+        });
     }
 };
 
 /**
- * @desc    Iniciar sesión
+ * @desc    Autenticar usuario
  * @route   POST /api/users/login
  * @access  Public
  */
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Verificar si se proporcionó email y contraseña
-        if (!email || !password) {
-            return next(new AppError('Por favor proporcione email y contraseña', 400));
-        }
-
-        // Verificar si el usuario existe
-        const user = await User.findOne({ email }).select('+password');
+        // Validar credenciales usando authService
+        const user = await authService.validateCredentials(email, password);
 
         if (!user) {
-            return next(new AppError('Credenciales inválidas', 401));
+            return res.status(401).json({
+                status: 'error',
+                message: 'Credenciales incorrectas',
+            });
         }
 
-        // Verificar si la contraseña coincide
-        const isMatch = await user.matchPassword(password);
-
-        if (!isMatch) {
-            return next(new AppError('Credenciales inválidas', 401));
-        }
-
-        sendTokenResponse(user, 200, res);
+        logger.info(`Usuario autenticado: ${email}`);
+        res.status(200).json({
+            status: 'success',
+            data: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                token: authService.generateToken(user._id),
+            },
+        });
     } catch (error) {
-        next(error);
+        logger.error(`Error en login: ${error.message}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error al iniciar sesión',
+            error: error.message,
+        });
     }
 };
 
 /**
- * @desc    Obtener usuario actual
+ * @desc    Obtener datos del usuario actual
  * @route   GET /api/users/me
  * @access  Private
  */
-exports.getMe = async (req, res, next) => {
+exports.getMe = async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
 
+        if (!user) {
+            logger.error(`Usuario no encontrado con ID: ${req.user.id}`);
+            return res.status(404).json({
+                status: 'error',
+                message: 'Usuario no encontrado',
+            });
+        }
+
+        logger.info(`Solicitud de perfil para usuario: ${user.email}`);
         res.status(200).json({
-            success: true,
-            data: user,
+            status: 'success',
+            data: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+            },
         });
     } catch (error) {
-        next(error);
+        logger.error(`Error al obtener perfil: ${error.message}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error al obtener información del usuario',
+            error: error.message,
+        });
     }
 };
 
 /**
- * Enviar respuesta con token
+ * @desc    Actualizar perfil de usuario
+ * @route   PUT /api/users/me
+ * @access  Private
  */
-const sendTokenResponse = (user, statusCode, res) => {
-    // Crear token
-    const token = user.getSignedJwtToken();
+exports.updateProfile = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const userId = req.user.id;
 
-    res.status(statusCode).json({
-        success: true,
-        token,
-        user: {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-        },
-    });
+        // Buscar el usuario
+        const user = await User.findById(userId);
+
+        if (!user) {
+            logger.error(`Usuario no encontrado para actualización con ID: ${userId}`);
+            return res.status(404).json({
+                status: 'error',
+                message: 'Usuario no encontrado',
+            });
+        }
+
+        // Actualizar campos
+        const updateData = {};
+
+        if (name) updateData.name = name;
+
+        if (email && email !== user.email) {
+            // Verificar si el email ya está en uso
+            const emailExists = await User.findOne({ email });
+            if (emailExists) {
+                logger.warn(`Intento de actualizar a un email existente: ${email}`);
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'El correo ya está registrado',
+                });
+            }
+            updateData.email = email;
+        }
+
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            updateData.password = await bcrypt.hash(password, salt);
+        }
+
+        // Actualizar usuario
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true, runValidators: true });
+
+        logger.info(`Perfil actualizado para usuario: ${updatedUser.email}`);
+        res.status(200).json({
+            status: 'success',
+            data: {
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+            },
+        });
+    } catch (error) {
+        logger.error(`Error al actualizar perfil: ${error.message}`);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error al actualizar el perfil',
+            error: error.message,
+        });
+    }
 };
