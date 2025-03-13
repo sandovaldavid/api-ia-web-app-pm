@@ -1,0 +1,70 @@
+services:
+    api:
+        build: .
+        restart: unless-stopped
+        ports:
+            - '3000:3000'
+        environment:
+            - NODE_ENV={NODE_ENV}
+            - MONGODB_URI=${MONGODB_URI}
+            - JWT_SECRET=${JWT_SECRET}
+            - JWT_EXPIRE=${JWT_EXPIRE}
+            - DJANGO_API_URL=${DJANGO_API_URL}
+            - DJANGO_API_TOKEN=${DJANGO_API_TOKEN}
+            - OLLAMA_API_URL={OLLAMA_API_URL}
+            - OLLAMA_MODEL={OLLAMA_MODEL}
+            - ENABLE_MONITORING=${ENABLE_MONITORING}
+        volumes:
+            - ./logs:/usr/src/app/logs
+            - ./uploads:/usr/src/app/uploads
+        depends_on:
+            - mongo
+            - ollama
+
+    mongo:
+        image: mongo:5
+        restart: unless-stopped
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER:-admin}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-password}
+        volumes:
+            - mongo-data:/data/db
+        ports:
+            - '27017:27017'
+
+    mongo-express:
+        image: mongo-express
+        restart: unless-stopped
+        ports:
+            - '8081:8081'
+        environment:
+            - ME_CONFIG_MONGODB_SERVER=mongo
+            - ME_CONFIG_MONGODB_PORT={MONGODB_PORT:-27017}
+            - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USER:-admin}
+            - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD:-password}
+            - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USER:-admin}
+            - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-password}
+        depends_on:
+            - mongo
+
+    ollama:
+        image: ollama/ollama:latest
+        restart: unless-stopped
+        volumes:
+            - ollama-data:/root/.ollama
+        ports:
+            - '11434:11434'
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: 1
+                          capabilities: [gpu]
+        command: >
+            sh -c "ollama pull deepseek-r1:1.5b && 
+                  ollama serve"
+
+volumes:
+    mongo-data:
+    ollama-data:
