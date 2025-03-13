@@ -5,7 +5,6 @@ const compression = require('compression');
 const morgan = require('morgan');
 const path = require('path');
 const { securityHeaders, corsOptions, rateLimitOptions } = require('./middlewares/securityMiddleware');
-const { monitoringMiddleware } = require('./utils/monitoring');
 const { trackRequest, addMonitoringHeaders } = require('./middlewares/monitoringMiddleware');
 const { cacheDebugMiddleware } = require('./services/cacheService');
 const { setupSwagger } = require('./config/swagger'); 
@@ -16,6 +15,12 @@ const routes = require('./routes');
 
 // Initialize Express app
 const app = express();
+
+// Track request start time for monitoring
+app.use((req, res, next) => {
+    req.startTime = Date.now();
+    next();
+});
 
 // Security headers via helmet
 app.use(securityHeaders);
@@ -50,12 +55,6 @@ if (config.nodeEnv !== 'test') {
         })
     );
 }
-
-// Track request start time for monitoring
-app.use((req, res, next) => {
-    req.startTime = Date.now();
-    next();
-});
 
 // Setup Swagger documentation
 setupSwagger(app);
