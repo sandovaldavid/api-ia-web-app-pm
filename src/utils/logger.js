@@ -9,11 +9,32 @@ if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
 }
 
-// Define log format
-const logFormat = winston.format.combine(
+// Define enhanced log format with metadata support
+const logFormat = winston.format.printf(({ level, message, timestamp, ...metadata }) => {
+    let msg = `${timestamp} [${level.toUpperCase()}]: ${message}`;
+    if (Object.keys(metadata).length > 0) {
+        msg += ` ${JSON.stringify(metadata)}`;
+    }
+    return msg;
+});
+
+// File format (without colors)
+const fileFormat = winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf((info) => {
-        return `${info.timestamp} [${info.level.toUpperCase()}]: ${info.message}`;
+    logFormat
+);
+
+// Console format (with proper colorization)
+const consoleFormat = winston.format.combine(
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.printf(({ level, message, timestamp, ...metadata }) => {
+        // Format the colorized level separately
+        const colorLevel = winston.format.colorize().colorize(level, level.toUpperCase());
+        let msg = `${timestamp} [${colorLevel}]: ${message}`;
+        if (Object.keys(metadata).length > 0) {
+            msg += ` ${JSON.stringify(metadata)}`;
+        }
+        return msg;
     })
 );
 
@@ -33,9 +54,9 @@ const level = () => {
 
 // Create transports
 const transports = [
-    // Console transport for all environments
+    // Console transport with fixed format
     new winston.transports.Console({
-        format: winston.format.combine(winston.format.colorize(), logFormat),
+        format: consoleFormat,
     }),
 
     // File transport for all logs
@@ -43,6 +64,7 @@ const transports = [
         filename: path.join(logsDir, 'combined.log'),
         maxsize: 10485760, // 10MB
         maxFiles: 5,
+        format: fileFormat,
     }),
 
     // File transport for error logs
@@ -51,6 +73,16 @@ const transports = [
         level: 'error',
         maxsize: 10485760, // 10MB
         maxFiles: 5,
+        format: fileFormat,
+    }),
+
+    // New HTTP log transport
+    new winston.transports.File({
+        filename: path.join(logsDir, 'http.log'),
+        level: 'http',
+        maxsize: 10485760, // 10MB
+        maxFiles: 5,
+        format: fileFormat,
     }),
 ];
 
@@ -58,13 +90,14 @@ const transports = [
 const logger = winston.createLogger({
     level: level(),
     levels,
-    format: logFormat,
+    format: fileFormat,
     transports,
     exceptionHandlers: [
         new winston.transports.File({
             filename: path.join(logsDir, 'exceptions.log'),
             maxsize: 10485760, // 10MB
             maxFiles: 5,
+            format: fileFormat,
         }),
     ],
     rejectionHandlers: [
@@ -72,9 +105,40 @@ const logger = winston.createLogger({
             filename: path.join(logsDir, 'rejections.log'),
             maxsize: 10485760, // 10MB
             maxFiles: 5,
+            format: fileFormat,
         }),
     ],
 });
 
-// Export logger
+// HTTP Logger configuration - attach as property to logger
+logger.httpLogger = {
+    request: (req) => {
+        logger.http('Incoming Request', {
+            method: req.method,
+            path: req.path,
+            body: req.body,
+            query: req.query,
+            ip: req.ip,
+        });
+    },
+    response: (req, res, responseTime) => {
+        logger.http('Outgoing Response', {
+            method: req.method,
+            path: req.path,
+            statusCode: res.statusCode,
+            responseTime: `${responseTime}ms`,
+        });
+    },
+};
+
+// Debug Logger configuration - attach as property to logger
+logger.debug = {
+    info: (message, meta) => logger.info(message, meta),
+    error: (message, meta) => logger.error(message, meta),
+    warn: (message, meta) => logger.warn(message, meta),
+    debug: (message, meta) => logger.debug(message, meta),
+    http: (message, meta) => logger.http(message, meta),
+};
+
+// Export logger directly to maintain compatibility with existing code
 module.exports = logger;
