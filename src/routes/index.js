@@ -16,6 +16,7 @@ router.use('/tasks', taskRoutes);
 router.use('/resources', resourceRoutes);
 router.use('/health', healthRoutes);
 router.use('/monitor', monitorRoutes);
+router.use('/messages', messageRoutes);
 
 // Default route
 router.get('/', (req, res) => {
