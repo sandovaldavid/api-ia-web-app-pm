@@ -48,13 +48,7 @@ app.use(addMonitoringHeaders);
 app.use(cacheDebugMiddleware);
 
 // Request logging
-if (config.nodeEnv !== 'test') {
-    app.use(
-        morgan(config.logFormat, {
-            stream: { write: (message) => logger.http(message.trim()) },
-        })
-    );
-}
+app.use(morgan(logger.httpRequestLogger()));
 
 // Setup Swagger documentation
 setupSwagger(app);
