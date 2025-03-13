@@ -3,13 +3,14 @@ const ollamaService = require('../services/ollamaService');
 const promptTemplates = require('../utils/promptTemplates');
 const cacheService = require('../services/cacheService');
 const logger = require('../utils/logger');
+const { AppError } = require('../middlewares/errorHandler');
 
 /**
  * @desc    Parameterize a task with AI
  * @route   GET /api/tasks/:taskId/parameterize
  * @access  Private
  */
-exports.parameterizeTask = async (req, res) => {
+exports.parameterizeTask = async (req, res, next) => {
     try {
         const { taskId } = req.params;
 
@@ -29,10 +30,7 @@ exports.parameterizeTask = async (req, res) => {
         const task = await djangoService.getTaskById(taskId);
 
         if (!task) {
-            return res.status(404).json({
-                success: false,
-                error: 'Task not found',
-            });
+            return next(new AppError('Task not found', 404));
         }
 
         // Generate prompt for task parameterization
@@ -52,11 +50,7 @@ exports.parameterizeTask = async (req, res) => {
         });
     } catch (error) {
         logger.error(`Error parameterizing task: ${error.message}`);
-        res.status(500).json({
-            success: false,
-            error: 'Error parameterizing task',
-            message: error.message,
-        });
+        next(new AppError(`Error parameterizing task: ${error.message}`, 500));
     }
 };
 
@@ -65,7 +59,7 @@ exports.parameterizeTask = async (req, res) => {
  * @route   GET /api/tasks/:taskId/documentation
  * @access  Private
  */
-exports.generateDocumentation = async (req, res) => {
+exports.generateDocumentation = async (req, res, next) => {
     try {
         const { taskId } = req.params;
 
@@ -73,10 +67,7 @@ exports.generateDocumentation = async (req, res) => {
         const task = await djangoService.getTaskById(taskId);
 
         if (!task) {
-            return res.status(404).json({
-                success: false,
-                error: 'Task not found',
-            });
+            return next(new AppError('Task not found', 404));
         }
 
         // Generate prompt for documentation
@@ -97,11 +88,7 @@ exports.generateDocumentation = async (req, res) => {
         });
     } catch (error) {
         logger.error(`Error generating documentation: ${error.message}`);
-        res.status(500).json({
-            success: false,
-            error: 'Error generating documentation',
-            message: error.message,
-        });
+        next(new AppError(`Error generating documentation: ${error.message}`, 500));
     }
 };
 
@@ -110,7 +97,7 @@ exports.generateDocumentation = async (req, res) => {
  * @route   GET /api/tasks/:taskId/estimate
  * @access  Private
  */
-exports.estimateTaskTime = async (req, res) => {
+exports.estimateTaskTime = async (req, res, next) => {
     try {
         const { taskId } = req.params;
         const { developerId } = req.query;
@@ -119,10 +106,7 @@ exports.estimateTaskTime = async (req, res) => {
         const task = await djangoService.getTaskById(taskId);
 
         if (!task) {
-            return res.status(404).json({
-                success: false,
-                error: 'Task not found',
-            });
+            return next(new AppError('Task not found', 404));
         }
 
         let developer = null;
@@ -147,11 +131,7 @@ exports.estimateTaskTime = async (req, res) => {
         });
     } catch (error) {
         logger.error(`Error estimating task time: ${error.message}`);
-        res.status(500).json({
-            success: false,
-            error: 'Error estimating task time',
-            message: error.message,
-        });
+        next(new AppError(`Error estimating task time: ${error.message}`, 500));
     }
 };
 
@@ -160,7 +140,7 @@ exports.estimateTaskTime = async (req, res) => {
  * @route   GET /api/tasks/projects/:projectId/analyze
  * @access  Private
  */
-exports.analyzeProject = async (req, res) => {
+exports.analyzeProject = async (req, res, next) => {
     try {
         const { projectId } = req.params;
 
@@ -168,10 +148,7 @@ exports.analyzeProject = async (req, res) => {
         const project = await djangoService.getProjectById(projectId);
 
         if (!project) {
-            return res.status(404).json({
-                success: false,
-                error: 'Project not found',
-            });
+            return next(new AppError('Project not found', 404));
         }
 
         // Fetch tasks for the project
@@ -195,10 +172,6 @@ exports.analyzeProject = async (req, res) => {
         });
     } catch (error) {
         logger.error(`Error analyzing project: ${error.message}`);
-        res.status(500).json({
-            success: false,
-            error: 'Error analyzing project',
-            message: error.message,
-        });
+        next(new AppError(`Error analyzing project: ${error.message}`, 500));
     }
 };
