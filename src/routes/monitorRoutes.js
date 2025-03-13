@@ -1,24 +1,18 @@
 const express = require('express');
-const {
-    getBasicMonitoring,
-    getDetailedMonitoring,
-    resetMonitoring,
-    startMonitoring,
-    stopMonitoring,
-} = require('../controllers/monitorController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
+const monitorController = require('../controllers/monitorController');
 
 const router = express.Router();
 
-// All monitor routes are protected and require admin role
+// Apply auth middleware and admin-only restriction to all routes
 router.use(protect);
 router.use(authorize('admin'));
 
-// Monitor routes
-router.get('/basic', getBasicMonitoring);
-router.get('/detailed', getDetailedMonitoring);
-router.post('/reset', resetMonitoring);
-router.post('/start', startMonitoring);
-router.post('/stop', stopMonitoring);
+// Monitoring routes
+router.get('/basic', monitorController.getBasicMonitoring);
+router.get('/detailed', monitorController.getDetailedMonitoring);
+router.post('/reset', monitorController.resetMonitoring);
+router.post('/start', monitorController.startMonitoring);
+router.post('/stop', monitorController.stopMonitoring);
 
 module.exports = router;
