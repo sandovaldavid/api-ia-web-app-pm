@@ -37,7 +37,7 @@ openApiDocument.servers = [
 const setupSwagger = (app) => {
     // Serve Swagger UI
     app.use(
-        '/docs/api',
+        '/api-docs',
         swaggerUi.serve,
         swaggerUi.setup(openApiDocument, {
             explorer: true,
@@ -48,13 +48,13 @@ const setupSwagger = (app) => {
     );
 
     // Serve raw OpenAPI JSON
-    app.get('/docs/api.json', (req, res) => {
+    app.get('/api-docs.json', (req, res) => {
         res.setHeader('Content-Type', 'application/json');
         res.send(openApiDocument);
     });
 
     // Serve raw OpenAPI YAML
-    app.get('/docs/api.yaml', (req, res) => {
+    app.get('/api-docs.yaml', (req, res) => {
         res.setHeader('Content-Type', 'text/yaml');
         res.send(fs.readFileSync(openApiPath, 'utf8'));
     });
