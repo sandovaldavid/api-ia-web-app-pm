@@ -14,7 +14,20 @@ process.on('uncaughtException', (err) => {
 });
 
 // Check configuration before starting
-runChecks().then(async (configOk) => {
+const startServer = async () => {
+    let configOk = true;
+    
+    try {
+        configOk = await runChecks();
+    } catch (error) {
+        logger.error(`Error running configuration checks: ${error.message}`);
+        if (config.nodeEnv === 'production') {
+            logger.error('Configuration check failed. Exiting in production mode.');
+            process.exit(1);
+        }
+        logger.warn('Continuing despite configuration check failure in non-production environment.');
+    }
+
     if (!configOk && config.nodeEnv === 'production') {
         logger.error('Configuration check failed. Exiting in production mode.');
         process.exit(1);
@@ -71,4 +84,6 @@ runChecks().then(async (configOk) => {
             process.exit(0);
         });
     });
-});
+};
+
+startServer();
