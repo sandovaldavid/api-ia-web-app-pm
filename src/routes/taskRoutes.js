@@ -1,24 +1,27 @@
 const express = require('express');
-const {
-    parameterizeTask,
-    generateDocumentation,
-    estimateTaskTime,
-    analyzeProject,
-} = require('../controllers/taskController');
 const { protect } = require('../middlewares/authMiddleware');
-const { validate, schemas } = require('../utils/validation');
+const { validateRequest, taskValidations } = require('../middlewares/validateRequest');
+const taskController = require('../controllers/taskController');
 
 const router = express.Router();
 
-// All task routes are protected
+// Apply auth middleware to all routes
 router.use(protect);
 
-// Task routes
-router.get('/:taskId/parameterize', validate(schemas.task.parameterize, 'params'), parameterizeTask);
-router.get('/:taskId/documentation', validate(schemas.task.parameterize, 'params'), generateDocumentation);
-router.get('/:taskId/estimate', validate(schemas.task.parameterize, 'params'), estimateTaskTime);
+// Task parameterization routes
+router
+    .route('/:taskId/parameterize')
+    .get(taskValidations.parameterize, validateRequest, taskController.parameterizeTask);
 
-// Project analysis
-router.get('/projects/:projectId/analyze', validate(schemas.task.project, 'params'), analyzeProject);
+// Documentation generation routes
+router
+    .route('/:taskId/documentation')
+    .get(taskValidations.parameterize, validateRequest, taskController.generateDocumentation);
+
+// Task time estimation routes
+router.route('/:taskId/estimate').get(taskValidations.parameterize, validateRequest, taskController.estimateTaskTime);
+
+// Project analysis routes
+router.route('/projects/:projectId/analyze').get(taskController.analyzeProject);
 
 module.exports = router;
