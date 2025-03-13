@@ -63,16 +63,14 @@ services:
             - '11434:11434'
         networks:
             - api-ia-web-pm-network
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                        - driver: nvidia
-                          count: 1
-                          capabilities: [gpu]
-        command: >
-            sh -c "ollama pull deepseek-r1:1.5b && 
-                  ollama serve"
+        entrypoint: >
+            sh -c "
+              ollama serve &
+              sleep 10 &&
+              ollama pull deepseek-r1:1.5b &&
+              # Keep the container running
+              wait
+            "
 
 volumes:
     mongo-data:
