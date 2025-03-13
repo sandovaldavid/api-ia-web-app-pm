@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Documentación para Desarrolladores - API Intermediaria</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <style>
+            body {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+            .dev-container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            .code-block {
+                background-color: #f8f9fa;
+                padding: 1rem;
+                border-radius: 0.3rem;
+                margin-bottom: 1rem;
+            }
+            .nav-pills .nav-link.active {
+                background-color: #0d6efd;
+            }
+            .breadcrumb {
+                margin-bottom: 2rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container dev-container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="/docs/">Documentación</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Guía para Desarrolladores</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex align-items-center mb-4">
+                <h1><i class="bi bi-code-slash"></i> Documentación para Desarrolladores</h1>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>👉 Nota:</strong> Esta sección está destinada a desarrolladores que quieran contribuir al
+                proyecto o entender su estructura interna.
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-md-3">
+                    <div class="sticky-top pt-3">
+                        <nav class="nav flex-column nav-pills">
+                            <a class="nav-link active" href="#arquitectura">Arquitectura</a>
+                            <a class="nav-link" href="#estructura">Estructura del Proyecto</a>
+                            <a class="nav-link" href="#flujo">Flujo de Datos</a>
+                            <a class="nav-link" href="#modelos">Modelos de Datos</a>
+                            <a class="nav-link" href="#servicios">Servicios</a>
+                            <a class="nav-link" href="#auth">Autenticación</a>
+                            <a class="nav-link" href="#contribuir">Cómo Contribuir</a>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <section id="arquitectura" class="mb-5">
+                        <h2>🏗️ Arquitectura</h2>
+                        <p>La API Intermediaria sigue una arquitectura en capas con separación de responsabilidades:</p>
+                        <img
+                            src="../assets/architecture.png"
+                            alt="Diagrama de Arquitectura"
+                            class="img-fluid border rounded my-3"
+                        />
+                        <ul>
+                            <li><strong>Capa de Presentación:</strong> Rutas y controladores REST</li>
+                            <li>
+                                <strong>Capa de Lógica de Negocio:</strong> Servicios que interactúan con Django y
+                                Ollama
+                            </li>
+                            <li>
+                                <strong>Capa de Persistencia:</strong> Modelos MongoDB para almacenar usuarios, chats y
+                                mensajes
+                            </li>
+                        </ul>
+                    </section>
+
+                    <section id="estructura" class="mb-5">
+                        <h2>📂 Estructura del Proyecto</h2>
+                        <div class="code-block">
+                            <pre>
+src/
+├── config/          # Configuración (base de datos, variables de entorno)
+├── controllers/     # Controladores para cada recurso
+├── middlewares/     # Middlewares (auth, validación, manejo de errores)
+├── models/          # Modelos MongoDB (Usuario, Mensaje, Chat)
+├── routes/          # Rutas API para cada recurso
+├── services/        # Servicios externos (Django, Ollama)
+├── utils/           # Utilidades y helpers
+├── app.js           # Configuración Express
+└── server.js        # Punto de entrada</pre
+                            >
+                        </div>
+                    </section>
+
+                    <section id="flujo" class="mb-5">
+                        <h2>🔄 Flujo de Datos</h2>
+                        <p>El flujo típico de una solicitud es el siguiente:</p>
+                        <ol>
+                            <li>El cliente envía una petición HTTP a una ruta específica</li>
+                            <li>Los middlewares de autenticación y validación procesan la petición</li>
+                            <li>El controlador correspondiente recibe la petición validada</li>
+                            <li>
+                                El controlador utiliza los servicios para obtener datos (Django) y procesarlos (Ollama)
+                            </li>
+                            <li>El resultado se almacena en MongoDB y se devuelve al cliente</li>
+                        </ol>
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Importante:</strong> Todas las comunicaciones con servicios externos deben ser
+                            manejadas por los módulos de servicio, no directamente en los controladores.
+                        </div>
+                    </section>
+
+                    <section id="modelos" class="mb-5">
+                        <h2>📊 Modelos de Datos</h2>
+                        <p>La aplicación utiliza MongoDB con Mongoose como ODM. Los principales modelos son:</p>
+
+                        <h4>User</h4>
+                        <p>Representa a un usuario de la aplicación:</p>
+                        <div class="code-block">
+                            <pre>
+const UserSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String,  // Cifrado con bcrypt
+  role: String,      // 'user' o 'admin'
+  createdAt: Date
+});</pre
+                            >
+                        </div>
+
+                        <h4>Chat</h4>
+                        <p>Representa una conversación que contiene mensajes:</p>
+                        <div class="code-block">
+                            <pre>
+const ChatSchema = new mongoose.Schema({
+  title: String,
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  taskId: String,    // ID de tarea en Django
+  projectId: String, // ID de proyecto en Django
+  status: String,    // 'active' o 'archived'
+  lastMessage: Date,
+  createdAt: Date,
+  updatedAt: Date
+});</pre
+                            >
+                        </div>
+
+                        <h4>Message</h4>
+                        <p>Representa un mensaje individual dentro de un chat:</p>
+                        <div class="code-block">
+                            <pre>
+const MessageSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  chat: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
+  requestType: String,  // Tipo de mensaje/solicitud
+  prompt: String,       // Texto enviado por el usuario
+  response: Object,     // Respuesta de la IA (puede ser compleja)
+  taskId: String,
+  projectId: String,
+  createdAt: Date
+});</pre
+                            >
+                        </div>
+                    </section>
+
+                    <section id="servicios" class="mb-5">
+                        <h2>🌐 Servicios</h2>
+                        <p>Los principales servicios de la aplicación son:</p>
+
+                        <h4>Django Service</h4>
+                        <p>Maneja la comunicación con la API de Django:</p>
+                        <div class="code-block">
+                            <pre>
+// djangoService.js
+// Funciones para obtener tareas, proyectos y recursos de Django
+exports.getTaskById = async (taskId) => {
+  // Implementación
+};</pre
+                            >
+                        </div>
+
+                        <h4>Ollama Service</h4>
+                        <p>Maneja la comunicación con la API de Ollama (IA):</p>
+                        <div class="code-block">
+                            <pre>
+// ollamaService.js
+// Funciones para generar completions con Ollama
+exports.generateCompletion = async (prompt) => {
+  // Implementación
+};</pre
+                            >
+                        </div>
+                    </section>
+
+                    <section id="auth" class="mb-5">
+                        <h2>🔐 Autenticación</h2>
+                        <p>La autenticación utiliza JWT (JSON Web Tokens):</p>
+                        <ul>
+                            <li>Los tokens son generados al iniciar sesión o registrarse</li>
+                            <li>
+                                El middleware <code>protect</code> verifica los tokens en cada petición a rutas
+                                protegidas
+                            </li>
+                            <li>Los tokens contienen el ID del usuario y tienen una expiración configurable</li>
+                        </ul>
+
+                        <div class="code-block">
+                            <pre>
+// Ejemplo de protección de ruta
+router.get('/me', protect, userController.getMe);</pre
+                            >
+                        </div>
+                    </section>
+
+                    <section id="contribuir" class="mb-5">
+                        <h2>👩‍💻 Cómo Contribuir</h2>
+                        <ol>
+                            <li>Haz fork del repositorio</li>
+                            <li>
+                                Crea una nueva rama para tu funcionalidad:
+                                <code>git checkout -b feature/nueva-funcion</code>
+                            </li>
+                            <li>Implementa tus cambios siguiendo las convenciones del proyecto</li>
+                            <li>Ejecuta y crea pruebas para tu código</li>
+                            <li>Envía un pull request a la rama principal</li>
+                        </ol>
+
+                        <h4>Convenciones de Código</h4>
+                        <ul>
+                            <li>Usa nombres descriptivos para variables y funciones</li>
+                            <li>Comenta secciones complejas del código</li>
+                            <li>Sigue el patrón de manejo de errores existente</li>
+                            <li>Mantén un estilo consistente con el resto del proyecto</li>
+                        </ul>
+                    </section>
+                </div>
+            </div>
+
+            <hr class="my-5" />
+
+            <div class="text-center">
+                <p>
+                    ¿Tienes preguntas sobre el desarrollo? Contáctanos en
+                    <a href="mailto:soporte@api-intermediaria.com">soporte@api-intermediaria.com</a>
+                </p>
+                <a href="/docs/" class="btn btn-primary">Volver a Documentación</a>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
