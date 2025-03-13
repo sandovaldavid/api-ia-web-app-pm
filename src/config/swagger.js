@@ -1,9 +1,3 @@
-/**
- * @desc    Swagger/OpenAPI configuration
- * @author  David Sandoval
- */
-
-const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('js-yaml');
 const fs = require('fs');
