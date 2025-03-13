@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const config = require('../config/env');
 const logger = require('../utils/logger');
+const { AppError } = require('./errorHandler');
 
 /**
  * Middleware para proteger rutas - Verifica si el usuario está autenticado
@@ -46,7 +47,7 @@ exports.protect = async (req, res, next) => {
             });
         }
     } catch (error) {
-        next(error);
+        next(new AppError('Error de autenticación', 500));
     }
 };
 
