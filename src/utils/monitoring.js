@@ -214,13 +214,7 @@ class ServerMonitor extends EventEmitter {
      * @param {string} level - Log level (info, warn, error)
      */
     log(message, level = 'info') {
-        if (this.options.logToConsole) {
-            console[level === 'info' ? 'log' : level](message);
-        }
-
-        if (this.options.logToFile && logger[level]) {
-            logger[level](message);
-        }
+        logger[level](message);
     }
 }
 
