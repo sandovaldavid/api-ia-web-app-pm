@@ -1,0 +1,325 @@
+/monitor/basic:
+    get:
+        summary: Obtener métricas básicas de monitoreo
+        description: Obtiene información básica sobre el estado del sistema
+        tags:
+            - Monitor
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Métricas básicas del sistema
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: true
+                                version:
+                                    type: string
+                                    example: '1.0.0'
+                                uptime:
+                                    type: object
+                                    properties:
+                                        days:
+                                            type: integer
+                                            example: 3
+                                        hours:
+                                            type: integer
+                                            example: 12
+                                        minutes:
+                                            type: integer
+                                            example: 45
+                                        seconds:
+                                            type: integer
+                                            example: 30
+                                        formatted:
+                                            type: string
+                                            example: '3d 12h 45m 30s'
+                                system:
+                                    type: object
+                                    properties:
+                                        cpu:
+                                            type: string
+                                            example: '25.5'
+                                        memory:
+                                            type: string
+                                            example: '42.3'
+                                        platform:
+                                            type: string
+                                            example: 'linux'
+                                        arch:
+                                            type: string
+                                            example: 'x64'
+                                        nodejs:
+                                            type: string
+                                            example: 'v16.14.0'
+                                services:
+                                    type: object
+                                    properties:
+                                        api:
+                                            type: string
+                                            example: 'running'
+                                        mongodb:
+                                            type: string
+                                            example: 'connected'
+                                stats:
+                                    type: object
+                                    properties:
+                                        users:
+                                            type: integer
+                                            example: 42
+                                        chats:
+                                            type: integer
+                                            example: 156
+                                        messages:
+                                            type: integer
+                                            example: 1234
+                                        aiMessages:
+                                            type: integer
+                                            example: 617
+                                        userMessages:
+                                            type: integer
+                                            example: 617
+                                requests:
+                                    type: object
+                                    properties:
+                                        total:
+                                            type: integer
+                                            example: 5678
+                                        errors:
+                                            type: integer
+                                            example: 23
+                                        avgResponseTime:
+                                            type: string
+                                            example: '256.7'
+            401:
+                $ref: '../components/responses.yaml#/Unauthorized'
+            403:
+                $ref: '../components/responses.yaml#/Forbidden'
+
+/monitor/detailed:
+    get:
+        summary: Obtener métricas detalladas de monitoreo
+        description: Obtiene información detallada sobre el sistema para diagnóstico
+        tags:
+            - Monitor
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Métricas detalladas del sistema
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: true
+                                version:
+                                    type: string
+                                    example: '1.0.0'
+                                timestamp:
+                                    type: string
+                                    format: date-time
+                                    example: '2023-07-18T15:45:28.651Z'
+                                system:
+                                    type: object
+                                    description: Información detallada del sistema
+                                metrics:
+                                    type: object
+                                    properties:
+                                        cpu:
+                                            type: string
+                                            example: '25.5'
+                                        memory:
+                                            type: string
+                                            example: '42.3'
+                                        requestCount:
+                                            type: integer
+                                            example: 5678
+                                        errorCount:
+                                            type: integer
+                                            example: 23
+                                        avgResponseTime:
+                                            type: string
+                                            example: '256.7'
+                                        uptime:
+                                            type: object
+                                services:
+                                    type: object
+                                    properties:
+                                        api:
+                                            type: string
+                                            example: 'running'
+                                        mongodb:
+                                            type: string
+                                            example: 'connected'
+                                        ollama:
+                                            type: string
+                                            example: 'connected'
+                                        django:
+                                            type: string
+                                            example: 'connected'
+                                database:
+                                    type: object
+                                    properties:
+                                        users:
+                                            type: object
+                                            properties:
+                                                count:
+                                                    type: integer
+                                                    example: 42
+                                                recent:
+                                                    type: integer
+                                                    example: 5
+                                        chats:
+                                            type: object
+                                            properties:
+                                                count:
+                                                    type: integer
+                                                    example: 156
+                                                active:
+                                                    type: integer
+                                                    example: 130
+                                                archived:
+                                                    type: integer
+                                                    example: 26
+                                                recent:
+                                                    type: integer
+                                                    example: 12
+                                        messages:
+                                            type: object
+                                            properties:
+                                                count:
+                                                    type: integer
+                                                    example: 1234
+                                                ai:
+                                                    type: integer
+                                                    example: 617
+                                                user:
+                                                    type: integer
+                                                    example: 617
+                                                recent:
+                                                    type: integer
+                                                    example: 78
+                                hourlyStats:
+                                    type: array
+                                    description: Estadísticas de mensajes por hora en las últimas 24h
+                                cache:
+                                    type: object
+                                    description: Estadísticas del caché de respuestas AI
+            401:
+                $ref: '../components/responses.yaml#/Unauthorized'
+            403:
+                $ref: '../components/responses.yaml#/Forbidden'
+
+/monitor/reset:
+    post:
+        summary: Reiniciar contadores de monitoreo
+        description: Reinicia los contadores de solicitudes y errores
+        tags:
+            - Monitor
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Contadores reiniciados correctamente
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: true
+                                message:
+                                    type: string
+                                    example: 'Monitoring counters reset successfully'
+            401:
+                $ref: '../components/responses.yaml#/Unauthorized'
+            403:
+                $ref: '../components/responses.yaml#/Forbidden'
+
+/monitor/start:
+    post:
+        summary: Iniciar monitoreo
+        description: Inicia el monitoreo si no está en ejecución
+        tags:
+            - Monitor
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Monitoreo iniciado correctamente
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: true
+                                message:
+                                    type: string
+                                    example: 'Monitoring started successfully'
+            400:
+                description: El monitoreo ya está en ejecución
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: false
+                                error:
+                                    type: string
+                                    example: 'Monitoring is already running'
+            401:
+                $ref: '../components/responses.yaml#/Unauthorized'
+            403:
+                $ref: '../components/responses.yaml#/Forbidden'
+
+/monitor/stop:
+    post:
+        summary: Detener monitoreo
+        description: Detiene el monitoreo si está en ejecución
+        tags:
+            - Monitor
+        security:
+            - BearerAuth: []
+        responses:
+            200:
+                description: Monitoreo detenido correctamente
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: true
+                                message:
+                                    type: string
+                                    example: 'Monitoring stopped successfully'
+            400:
+                description: El monitoreo no está en ejecución
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: false
+                                error:
+                                    type: string
+                                    example: 'Monitoring is not running'
+            401:
+                $ref: '../components/responses.yaml#/Unauthorized'
+            403:
+                $ref: '../components/responses.yaml#/Forbidden'
