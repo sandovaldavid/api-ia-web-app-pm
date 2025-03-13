@@ -1,8 +1,3 @@
-/**
- * @desc    Global error handling middleware
- * @author  David Sandoval
- */
-
 const logger = require('../utils/logger');
 const config = require('../config/env');
 
