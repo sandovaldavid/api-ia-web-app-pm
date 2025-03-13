@@ -12,6 +12,23 @@ const path = require('path');
 const dotenv = require('dotenv');
 const chalk = require('chalk');
 
+// Make sure chalk is working
+if (typeof chalk !== 'function' && !chalk.blue) {
+    // Fallback to plain console if chalk isn't working
+    chalk = {
+        blue: (text) => `\x1b[34m${text}\x1b[0m`,
+        green: (text) => `\x1b[32m${text}\x1b[0m`,
+        red: (text) => `\x1b[31m${text}\x1b[0m`,
+        yellow: (text) => `\x1b[33m${text}\x1b[0m`,
+        gray: (text) => `\x1b[90m${text}\x1b[0m`,
+        bold: {
+            blue: (text) => `\x1b[1m\x1b[34m${text}\x1b[0m`,
+            green: (text) => `\x1b[1m\x1b[32m${text}\x1b[0m`,
+            red: (text) => `\x1b[1m\x1b[31m${text}\x1b[0m`
+        }
+    };
+}
+
 // Load environment variables
 dotenv.config();
 
