@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>API Intermediaria IA - Documentación</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <style>
+            body {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+            }
+            .hero {
+                background-color: #f8f9fa;
+                padding: 3rem 0;
+                margin-bottom: 2rem;
+            }
+            .feature-icon {
+                font-size: 2.5rem;
+                color: #0d6efd;
+                margin-bottom: 1rem;
+            }
+            .feature-box {
+                padding: 1.5rem;
+                background-color: #fff;
+                border-radius: 0.5rem;
+                box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+                height: 100%;
+            }
+            .footer {
+                margin-top: 3rem;
+                padding: 2rem 0;
+                background-color: #f8f9fa;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="#">🤖 API Intermediaria IA</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/api-docs">API Docs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="https://github.com/sandovaldavid/api-ia-web-app-pm"
+                                target="_blank"
+                                >GitHub</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="hero text-center">
+            <div class="container">
+                <h1 class="display-4">API Intermediaria IA</h1>
+                <p class="lead">
+                    Conectando Django y Ollama (DeepSeek) para optimizar la gestión de proyectos mediante IA
+                </p>
+                <div class="mt-4">
+                    <a href="/api-docs" class="btn btn-primary btn-lg me-2">Ver API Docs</a>
+                    <a href="/health" class="btn btn-outline-secondary btn-lg">Verificar Estado</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2 class="text-center mb-4">Características Principales</h2>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">🔄</div>
+                        <h3>Integración con Django</h3>
+                        <p>
+                            Consulta y actualiza datos de proyectos, tareas y recursos en Django de forma transparente.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">🧠</div>
+                        <h3>Procesamiento con IA</h3>
+                        <p>Utiliza modelos de Ollama (DeepSeek) para análisis y recomendaciones inteligentes.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">📊</div>
+                        <h3>Parametrización de Tareas</h3>
+                        <p>Analiza tareas para determinar su complejidad, tipo y tiempo estimado automáticamente.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-3">
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">👥</div>
+                        <h3>Asignación Inteligente</h3>
+                        <p>
+                            Recomienda los mejores recursos para cada tarea basándose en habilidades y disponibilidad.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">💬</div>
+                        <h3>Sistema de Chat</h3>
+                        <p>Permite interactuar con la IA mediante conversaciones naturales y contextualizada.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="feature-box">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Autenticación Segura</h3>
+                        <p>Sistema robusto de autenticación con JWT para proteger todos los endpoints.</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-5" />
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <h2>Documentación de API</h2>
+                    <p>
+                        La API está completamente documentada utilizando OpenAPI/Swagger. Puedes explorar todos los
+                        endpoints, modelos de datos, parámetros y respuestas de manera interactiva.
+                    </p>
+                    <a href="/api-docs" class="btn btn-primary">Ver Documentación Swagger</a>
+                </div>
+
+                <div class="col-lg-6">
+                    <h2>Ejemplos de Uso</h2>
+                    <div class="card">
+                        <div class="card-header">Parametrizar una tarea</div>
+                        <div class="card-body">
+                            <pre><code>GET /api/tasks/123/parameterize</code></pre>
+                            <p>Analiza una tarea y devuelve su complejidad, tipo, palabras clave y tiempo estimado.</p>
+                        </div>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-header">Asignar recursos a un proyecto</div>
+                        <div class="card-body">
+                            <pre><code>GET /api/resources/assign/project/456</code></pre>
+                            <p>Recomienda el equipo óptimo para un proyecto completo y asigna recursos a cada tarea.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-5" />
+
+            <h2 class="text-center mb-4">Flujo de Trabajo</h2>
+            <div class="card">
+                <div class="card-body">
+                    <ol class="list-group list-group-numbered">
+                        <li class="list-group-item">
+                            🔐 <strong>Autenticación:</strong> El usuario se autentica para obtener un token JWT
+                        </li>
+                        <li class="list-group-item">
+                            📋 <strong>Proyectos:</strong> Se obtienen los proyectos y tareas desde Django
+                        </li>
+                        <li class="list-group-item">
+                            🧠 <strong>Análisis:</strong> La API procesa las tareas con IA (Ollama)
+                        </li>
+                        <li class="list-group-item">
+                            📊 <strong>Parametrización:</strong> Se analizan las tareas para determinar complejidad,
+                            tipo, etc.
+                        </li>
+                        <li class="list-group-item">
+                            👥 <strong>Asignación:</strong> Se recomiendan recursos para cada tarea
+                        </li>
+                        <li class="list-group-item">
+                            💬 <strong>Interacción:</strong> El usuario puede conversar con la IA sobre aspectos
+                            específicos
+                        </li>
+                        <li class="list-group-item">
+                            📝 <strong>Documentación:</strong> Se guarda el historial de todas las interacciones
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <hr class="my-5" />
+
+            <h2 class="text-center mb-4">Guías de Uso</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🚀 Comenzando</h5>
+                            <p class="card-text">Guía paso a paso para comenzar a utilizar la API Intermediaria.</p>
+                            <a href="/docs/guides/getting-started.html" class="btn btn-outline-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔐 Autenticación</h5>
+                            <p class="card-text">Cómo implementar la autenticación con JWT en tus aplicaciones.</p>
+                            <a href="/docs/guides/authentication.html" class="btn btn-outline-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">💬 Sistema de Chat</h5>
+                            <p class="card-text">Aprende a utilizar el sistema de chat con IA para tus proyectos.</p>
+                            <a href="/docs/guides/chat-system.html" class="btn btn-outline-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container text-center">
+                <p>🤖 API Intermediaria IA para Gestión de Proyectos - v1.0.0</p>
+                <p>
+                    Desarrollado por <a href="https://github.com/sandovaldavid" target="_blank">sandovaldavid</a> y
+                    <a href="https://github.com/MoisesAmen" target="_blank">MoisesAmen</a>
+                </p>
+            </div>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
