@@ -1,18 +1,31 @@
 const express = require('express');
-const { createChat, getChats, getChat, updateChat, archiveChat, deleteChat } = require('../controllers/chatController');
 const { protect } = require('../middlewares/authMiddleware');
-const { validate, schemas } = require('../utils/validation');
+const { validateRequest, chatValidations } = require('../middlewares/validateRequest');
+const chatController = require('../controllers/chatController');
+const messageController = require('../controllers/messageController');
 
 const router = express.Router();
 
-// All chat routes are protected
+// Apply auth middleware to all routes
 router.use(protect);
 
 // Chat routes
-router.route('/').get(validate(schemas.chat.list, 'query'), getChats).post(validate(schemas.chat.create), createChat);
+router.route('/').post(chatValidations.create, validateRequest, chatController.createChat).get(chatController.getChats);
 
-router.route('/:id').get(getChat).put(validate(schemas.chat.update), updateChat).delete(deleteChat);
+router
+    .route('/:id')
+    .get(chatController.getChat)
+    .put(chatValidations.update, validateRequest, chatController.updateChat)
+    .delete(chatController.deleteChat);
 
-router.patch('/:id/archive', archiveChat);
+router.patch('/:id/archive', chatController.archiveChat);
+
+// Messages within chats
+router
+    .route('/:chatId/messages')
+    .get(messageController.getMessages)
+    .post(validateRequest, messageController.createMessage);
+
+router.route('/:chatId/messages/:messageId').delete(messageController.deleteMessage);
 
 module.exports = router;
