@@ -52,10 +52,7 @@ const checkMongoDB = async () => {
     console.log(chalk.blue('📋 Checking MongoDB connection...'));
 
     try {
-        await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
+        await mongoose.connect(process.env.MONGODB_URI);
 
         console.log(chalk.green('✅ Successfully connected to MongoDB.'));
         await mongoose.connection.close();

@@ -4,8 +4,6 @@ const logger = require('../utils/logger');
 
 // Configure mongoose options
 const options = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
     autoIndex: config.nodeEnv === 'development',
     connectTimeoutMS: 30000, // 30 seconds
     socketTimeoutMS: 60000, // 60 seconds
