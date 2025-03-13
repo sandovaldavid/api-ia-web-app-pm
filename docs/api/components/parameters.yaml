@@ -1,0 +1,73 @@
+# Parámetros comunes reutilizables
+
+ChatId:
+    name: chatId
+    in: path
+    required: true
+    schema:
+        type: string
+    description: ID único del chat
+
+MessageId:
+    name: messageId
+    in: path
+    required: true
+    schema:
+        type: string
+    description: ID único del mensaje
+
+TaskId:
+    name: taskId
+    in: path
+    required: true
+    schema:
+        type: string
+    description: ID único de la tarea en Django
+
+ProjectId:
+    name: projectId
+    in: path
+    required: true
+    schema:
+        type: string
+    description: ID único del proyecto en Django
+
+Pagination:
+    - name: page
+      in: query
+      required: false
+      schema:
+          type: integer
+          minimum: 1
+          default: 1
+      description: Número de página
+    - name: limit
+      in: query
+      required: false
+      schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      description: Número de elementos por página
+
+Filters:
+    - name: status
+      in: query
+      required: false
+      schema:
+          type: string
+          enum: [active, archived]
+      description: Filtrar por estado
+    - name: projectId
+      in: query
+      required: false
+      schema:
+          type: string
+      description: Filtrar por ID de proyecto
+    - name: taskId
+      in: query
+      required: false
+      schema:
+          type: string
+      description: Filtrar por ID de tarea
