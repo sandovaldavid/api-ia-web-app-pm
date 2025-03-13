@@ -1,0 +1,73 @@
+# Rutas de recursos
+
+assignToTask:
+    get:
+        tags:
+            - Recursos
+        summary: Asignar recursos a una tarea
+        description: Asigna los mejores recursos disponibles a una tarea específica
+        operationId: assignResourceToTask
+        parameters:
+            - $ref: '../components/parameters.yaml#/taskIdParam'
+        responses:
+            200:
+                description: Recursos asignados exitosamente
+                content:
+                    application/json:
+                        schema:
+                            $ref: '../components/schemas.yaml#/ResourceAssignment'
+            400:
+                $ref: '../components/responses.yaml#/BadRequestError'
+            401:
+                $ref: '../components/responses.yaml#/UnauthorizedError'
+            404:
+                $ref: '../components/responses.yaml#/NotFoundError'
+            500:
+                $ref: '../components/responses.yaml#/ServerError'
+
+assignToProject:
+    get:
+        tags:
+            - Recursos
+        summary: Asignar recursos a un proyecto
+        description: Asigna los mejores recursos disponibles a todas las tareas de un proyecto
+        operationId: assignResourceToProject
+        parameters:
+            - $ref: '../components/parameters.yaml#/projectIdParam'
+        responses:
+            200:
+                description: Recursos asignados exitosamente
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                success:
+                                    type: boolean
+                                    example: true
+                                data:
+                                    type: object
+                                    properties:
+                                        proyecto:
+                                            type: string
+                                            example: 'Proyecto de ejemplo'
+                                        equipo_sugerido:
+                                            type: array
+                                            items:
+                                                type: string
+                                            example: ['Nombre1', 'Nombre2']
+                                        tareas_asignadas:
+                                            type: object
+                                            additionalProperties:
+                                                type: string
+                                            example:
+                                                Nombre1: 'Tarea específica'
+                                                Nombre2: 'Otra tarea específica'
+            400:
+                $ref: '../components/responses.yaml#/BadRequestError'
+            401:
+                $ref: '../components/responses.yaml#/UnauthorizedError'
+            404:
+                $ref: '../components/responses.yaml#/NotFoundError'
+            500:
+                $ref: '../components/responses.yaml#/ServerError'
