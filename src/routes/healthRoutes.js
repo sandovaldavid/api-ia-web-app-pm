@@ -1,13 +1,13 @@
 const express = require('express');
-const { basicHealth, detailedHealth } = require('../controllers/healthController');
-const { protect } = require('../middlewares/authMiddleware');
+const { protect, authorize } = require('../middlewares/authMiddleware');
+const healthController = require('../controllers/healthController');
 
 const router = express.Router();
 
-// Public health check
-router.get('/', basicHealth);
+// Basic health check is public
+router.get('/', healthController.basicHealth);
 
-// Detailed health check (protected)
-router.get('/detailed', protect, detailedHealth);
+// Detailed health check requires authentication and admin rights
+router.get('/detailed', protect, authorize('admin'), healthController.detailedHealth);
 
 module.exports = router;
