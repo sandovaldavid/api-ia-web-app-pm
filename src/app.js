@@ -1,8 +1,3 @@
-/**
- * @desc    Main application setup
- * @author  David Sandoval
- */
-
 const express = require('express');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
@@ -13,8 +8,8 @@ const { securityHeaders, corsOptions, rateLimitOptions } = require('./middleware
 const { monitoringMiddleware } = require('./utils/monitoring');
 const { trackRequest, addMonitoringHeaders } = require('./middlewares/monitoringMiddleware');
 const { cacheDebugMiddleware } = require('./services/cacheService');
-const { setupSwagger } = require('./config/swagger'); // Importar configuración de Swagger
-const { errorHandler } = require('./middlewares/errorHandler'); // Destructure to get just the errorHandler function
+const { setupSwagger } = require('./config/swagger'); 
+const { errorHandler } = require('./middlewares/errorHandler');
 const config = require('./config/env');
 const logger = require('./utils/logger');
 const routes = require('./routes');
