@@ -106,8 +106,12 @@ exports.getStats = () => {
 exports.cacheDebugMiddleware = (req, res, next) => {
     if (config.nodeEnv !== 'production' && cache) {
         res.set('X-Cache-Status', 'enabled');
-        res.set('X-Cache-Size', cache.size.toString());
-        res.set('X-Cache-Items', cache.itemCount.toString());
+
+        const cacheSize = cache.size !== undefined && cache.size !== null ? cache.size.toString() : '';
+        res.set('X-Cache-Size', cacheSize);
+
+        const cacheItems = cache.itemCount !== undefined && cache.itemCount !== null ? cache.itemCount.toString() : '';
+        res.set('X-Cache-Items', cacheItems);
     }
 
     next();
