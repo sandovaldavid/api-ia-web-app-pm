@@ -30,7 +30,7 @@
   "author": "David Sandoval",
   "license": "MIT",
   "engines": {
-    "node": ">=22.0.0"
+    "node": "22.13.1"
   },
   "dependencies": {
     "axios": "^1.8.3",
