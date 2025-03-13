@@ -24,7 +24,7 @@ runChecks().then(async (configOk) => {
     await connectDB();
 
     // Start the server
-    const server = app.listen(config.port, () => {
+    const server = app.listen(config.port, config.host || '0.0.0.0', () => {
         logger.info(`Server running in ${config.nodeEnv} mode on port ${config.port}`);
     });
 
@@ -58,6 +58,16 @@ runChecks().then(async (configOk) => {
         server.close(() => {
             mongoose.connection.close();
             logger.info('💥 Process terminated!');
+        });
+    });
+
+    // Handle SIGINT (Ctrl+C)
+    process.on('SIGINT', () => {
+        logger.info('👋 SIGINT RECEIVED. Shutting down gracefully');
+        server.close(() => {
+            mongoose.connection.close();
+            logger.info('💥 Process terminated!');
+            process.exit(0);
         });
     });
 });
