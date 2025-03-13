@@ -1,22 +1,25 @@
 const express = require('express');
-const {
-    assignResourceToTask,
-    assignResourcesForProject,
-    getResources,
-    getProjectResources,
-} = require('../controllers/resourceController');
 const { protect } = require('../middlewares/authMiddleware');
-const { validate, schemas } = require('../utils/validation');
+const { validateRequest, resourceValidations } = require('../middlewares/validateRequest');
+const resourceController = require('../controllers/resourceController');
 
 const router = express.Router();
 
-// All resource routes are protected
+// Apply auth middleware to all routes
 router.use(protect);
 
-// Resource routes
-router.get('/', getResources);
-router.get('/assign/:taskId', validate(schemas.task.resource, 'params'), assignResourceToTask);
-router.get('/assign/project/:projectId', validate(schemas.task.project, 'params'), assignResourcesForProject);
-router.get('/project/:projectId', validate(schemas.task.project, 'params'), getProjectResources);
+// Resource assignment routes
+router
+    .route('/assign/:taskId')
+    .get(resourceValidations.assign, validateRequest, resourceController.assignResourceToTask);
+
+// Project resource assignment routes
+router.route('/assign/project/:projectId').get(resourceController.assignResourcesForProject);
+
+// Get all resources
+router.route('/').get(resourceController.getResources);
+
+// Get resources for a project
+router.route('/project/:projectId').get(resourceController.getProjectResources);
 
 module.exports = router;
