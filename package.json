@@ -17,7 +17,8 @@
     "migrate": "node scripts/migrations/01_add_indices.js",
     "check-config": "node tools/check-config.js",
     "api-test": "node tools/api-test.js",
-    "docs:generate": "node tools/generate-docs.js"
+    "docs:generate": "node tools/generate-docs.js",
+    "docs:generate-guide": "node tools/generate-guide.js"
   },
   "keywords": [
     "api",
