@@ -1,0 +1,82 @@
+openapi: 3.1.0
+info:
+    title: API Intermediaria IA
+    description: |
+        API RESTful para la integración entre sistemas de gestión de proyectos y modelos de IA local.
+        Permite parametrización de tareas, asignación de recursos y asistencia mediante chat con IA.
+    version: 1.0.0
+    contact:
+        name: David Sandoval
+        email: soporte@api-intermediaria.com
+    license:
+        name: MIT
+        url: https://opensource.org/licenses/MIT
+
+tags:
+    - name: Auth
+      description: Autenticación y gestión de usuarios
+    - name: Chats
+      description: Gestión de conversaciones con IA
+    - name: Messages
+      description: Mensajes dentro de las conversaciones con IA
+    - name: Tasks
+      description: Operaciones relacionadas con tareas y proyectos
+    - name: Resources
+      description: Gestión de recursos y asignaciones
+    - name: Health
+      description: Endpoints para verificación del estado del sistema
+    - name: Monitor
+      description: Monitoreo y métricas del sistema
+
+servers:
+    - url: /api
+      description: Servidor actual
+
+paths:
+    # Importar definiciones de rutas
+    /auth:
+        $ref: './paths/auth.yaml'
+    /tasks:
+        $ref: './paths/tasks.yaml'
+    /resources:
+        $ref: './paths/resources.yaml'
+    /messages:
+        $ref: './paths/messages.yaml'
+    /health:
+        $ref: './paths/health.yaml'
+    /monitor:
+        $ref: './paths/monitor.yaml'
+
+components:
+    schemas:
+        # Instead of direct file reference, individual schemas should be referenced
+        # in the actual component files using $ref
+        User:
+            $ref: './components/schemas.yaml#/User'
+        Task:
+            $ref: './components/schemas.yaml#/Task'
+        Resource:
+            $ref: './components/schemas.yaml#/Resource'
+
+    responses:
+        # Similar approach for responses
+        NotFound:
+            $ref: './components/responses.yaml#/NotFound'
+        BadRequest:
+            $ref: './components/responses.yaml#/BadRequest'
+        Unauthorized:
+            $ref: './components/responses.yaml#/Unauthorized'
+
+    parameters:
+        # Similar approach for parameters
+        idParam:
+            $ref: './components/parameters.yaml#/idParam'
+
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+
+security:
+    - BearerAuth: []
