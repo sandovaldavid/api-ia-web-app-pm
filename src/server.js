@@ -26,6 +26,7 @@ runChecks().then(async (configOk) => {
     // Start the server
     const server = app.listen(config.port, config.host || '0.0.0.0', () => {
         logger.info(`Server running in ${config.nodeEnv} mode on port ${config.port}`);
+        logger.info(`API URL: http://${config.host}:${config.port}`);
     });
 
     // Start monitoring
