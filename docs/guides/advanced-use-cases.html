@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Casos de Uso Avanzados - API Intermediaria IA</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <!-- Add Prism.js for code highlighting -->
+        <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
+        <style>
+            body {
+                padding-bottom: 2rem;
+            }
+
+            .container-markdown {
+                margin-top: 2rem;
+            }
+
+            .hero {
+                background-color: #f8f9fa;
+                padding: 2rem 0;
+                margin-bottom: 2rem;
+            }
+            .footer {
+                margin-top: 3rem;
+                padding: 2rem 0;
+                background-color: #f8f9fa;
+            }
+            /* Guide specific styles */
+            .guide-container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            .guide-container img {
+                max-width: 100%;
+                height: auto;
+            }
+            .guide-container h1 {
+                margin-bottom: 1.5rem;
+            }
+            .guide-container h2 {
+                margin-top: 2rem;
+                margin-bottom: 1rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid #dee2e6;
+            }
+            .guide-container h3 {
+                margin-top: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+            .guide-container pre {
+                background-color: #f8f9fa;
+                border-radius: 0.25rem;
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            .guide-container blockquote {
+                border-left: 4px solid #0d6efd;
+                padding-left: 1rem;
+                color: #6c757d;
+                background-color: #f8f9fa;
+                margin: 1rem 0;
+                padding: 0.5rem 1rem;
+            }
+            .guide-container ul, .guide-container ol {
+                padding-left: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            .guide-container code:not([class*="language-"]) {
+                padding: 0.2em 0.4em;
+                background-color: #f8f9fa;
+                border-radius: 3px;
+            }
+            .sidebar {
+                position: sticky;
+                top: 3rem;
+                margin-top: 2.5rem;
+            }
+            @media (max-width: 767px) {
+                .sidebar {
+                    position: static;
+                    margin-bottom: 2rem;
+                }
+            }
+            .guide-container table {
+                width: 100%;
+                margin-bottom: 1rem;
+                border-collapse: collapse;
+            }
+            .guide-container table th,
+            .guide-container table td {
+                padding: 0.5rem;
+                border: 1px solid #dee2e6;
+            }
+            .guide-container table thead th {
+                background-color: #f8f9fa;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="/docs/index.html">🤖 API Intermediaria IA</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/docs/index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/docs/api">API Docs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="https://github.com/sandovaldavid/api-ia-web-app-pm"
+                                target="_blank"
+                                >GitHub</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container container-markdown">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="sidebar">
+                        <div class="card">
+                            <div class="card-header">Guías Disponibles</div>
+                            <div class="list-group list-group-flush">
+                                <a
+                                    href="/docs/guides/getting-started.html"
+                                    class="list-group-item list-group-item-action "
+                                    >🚀 Comenzando</a
+                                >
+                                <a
+                                    href="/docs/guides/authentication.html"
+                                    class="list-group-item list-group-item-action "
+                                    >🔐 Autenticación</a
+                                >
+                                <a 
+                                    href="/docs/guides/chat-system.html" 
+                                    class="list-group-item list-group-item-action "
+                                    >💬 Sistema de Chat</a
+                                >
+                                <a
+                                    href="/docs/guides/task-parameterization.html"
+                                    class="list-group-item list-group-item-action "
+                                    >📊 Parametrización de Tareas</a
+                                >
+                                <a 
+                                    href="/docs/guides/resource-assignment.html" 
+                                    class="list-group-item list-group-item-action "
+                                    >👥 Asignación de Recursos</a
+                                >
+                                <a
+                                    href="/docs/guides/django-integration.html"
+                                    class="list-group-item list-group-item-action "
+                                    >🧩 Integración con Django</a
+                                >
+                                <a
+                                    href="/docs/guides/deployment.html"
+                                    class="list-group-item list-group-item-action "
+                                    >🚀 Despliegue en Producción</a
+                                >
+                                <a
+                                    href="/docs/guides/testing.html"
+                                    class="list-group-item list-group-item-action "
+                                    >🧪 Testing</a
+                                >
+                                <a
+                                    href="/docs/guides/troubleshooting.html"
+                                    class="list-group-item list-group-item-action "
+                                    >🔧 Solución de Problemas</a
+                                >
+                                <a
+                                    href="/docs/guides/prompt-engineering.html"
+                                    class="list-group-item list-group-item-action "
+                                    >📝 Ingeniería de Prompts</a
+                                >
+                                <a
+                                    href="/docs/guides/advanced-use-cases.html"
+                                    class="list-group-item list-group-item-action active"
+                                    >🔧 Casos de Uso Avanzados</a
+                                >
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <a href="/docs/index.html" class="btn btn-outline-primary w-100">← Volver al Inicio</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="guide-container">
+                        <!-- Markdown content will be rendered here -->
+                        <div id="markdown-content" data-markdown-path="/docs/guides/advanced-use-cases.md"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="container text-center">
+                <p>🤖 API Intermediaria IA para Gestión de Proyectos - v1.0.0</p>
+                <p>
+                    Desarrollado por <a href="https://github.com/sandovaldavid" target="_blank">sandovaldavid</a> y
+                    <a href="https://github.com/MoisesAmen" target="_blank">MoisesAmen</a>
+                </p>
+            </div>
+        </footer>
+
+        <!-- Required scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/marked@4.2.12/marked.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-nginx.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+        <script src="/docs/js/markdown-renderer.js"></script>
+    </body>
+</html>
