@@ -8,13 +8,14 @@ const logger = require('../utils/logger');
 const { version } = require('../../package.json');
 const ollamaService = require('../services/ollamaService');
 const djangoService = require('../services/djangoService');
+const { AppError } = require('../middlewares/errorHandler');
 
 /**
  * @desc    Get basic monitoring data
  * @route   GET /api/monitor/basic
  * @access  Private (Admin)
  */
-exports.getBasicMonitoring = async (req, res) => {
+exports.getBasicMonitoring = async (req, res, next) => {
     try {
         // Get system metrics
         const metrics = monitor.getMetrics();
@@ -35,7 +36,6 @@ exports.getBasicMonitoring = async (req, res) => {
         const services = {
             api: 'running',
             mongodb: mongoStatus,
-            // More detailed status checks are done in detailedMonitoring
         };
 
         res.status(200).json({
@@ -59,11 +59,7 @@ exports.getBasicMonitoring = async (req, res) => {
         });
     } catch (error) {
         logger.error(`Error fetching monitoring data: ${error.message}`);
-        res.status(500).json({
-            success: false,
-            error: 'Error fetching monitoring data',
-            message: error.message,
-        });
+        next(new AppError(`Error fetching monitoring data: ${error.message}`, 500));
     }
 };
 
