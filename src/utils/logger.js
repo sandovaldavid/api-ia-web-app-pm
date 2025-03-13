@@ -19,10 +19,7 @@ const logFormat = winston.format.printf(({ level, message, timestamp, ...metadat
 });
 
 // File format (without colors)
-const fileFormat = winston.format.combine(
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    logFormat
-);
+const fileFormat = winston.format.combine(winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat);
 
 // Console format (with proper colorization)
 const consoleFormat = winston.format.combine(
