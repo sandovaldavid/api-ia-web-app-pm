@@ -83,6 +83,40 @@ La API utiliza MongoDB para almacenar datos de usuarios, chats y mensajes, mient
    node tools/check-config.js
    ```
 
+## 🛠️ Scripts Disponibles
+
+El proyecto incluye los siguientes scripts para facilitar el desarrollo y mantenimiento:
+
+- **Ejecución**
+  ```bash
+  npm start             # Inicia el servidor en modo producción
+  npm run dev           # Inicia servidor con hot-reload usando nodemon
+  ```
+
+- **Código y Estilo**
+  ```bash
+  npm run lint          # Ejecuta ESLint para verificar estilo de código
+  npm run lint:fix      # Corrige automáticamente problemas de estilo
+  npm run format        # Aplica Prettier a todos los archivos
+  ```
+
+- **Base de Datos**
+  ```bash
+  npm run migrate       # Ejecuta migraciones de base de datos
+  ```
+
+- **Utilidades y Verificación**
+  ```bash
+  npm run check-config  # Verifica la configuración del sistema
+  npm run api-test      # Ejecuta pruebas sobre la API
+  ```
+
+- **Documentación**
+  ```bash
+  npm run docs:generate        # Genera documentación de la API
+  npm run docs:generate-guide  # Genera guías para desarrolladores
+  ```
+
 ## 📊 Endpoints Principales
 
 - **Autenticación**: `/api/users/login`, `/api/users/register`
