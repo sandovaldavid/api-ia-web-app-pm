@@ -109,23 +109,23 @@ const logger = winston.createLogger({
 
 // Colores para los diferentes métodos HTTP
 const httpMethodColors = {
-  GET: '\x1b[32m',     // Verde
-  POST: '\x1b[34m',    // Azul
-  PUT: '\x1b[33m',     // Amarillo
-  PATCH: '\x1b[35m',   // Magenta
-  DELETE: '\x1b[31m',  // Rojo
-  OPTIONS: '\x1b[36m', // Cyan
-  HEAD: '\x1b[37m',    // Blanco
-  default: '\x1b[37m'  // Blanco por defecto
+    GET: '\x1b[32m', // Verde
+    POST: '\x1b[34m', // Azul
+    PUT: '\x1b[33m', // Amarillo
+    PATCH: '\x1b[35m', // Magenta
+    DELETE: '\x1b[31m', // Rojo
+    OPTIONS: '\x1b[36m', // Cyan
+    HEAD: '\x1b[37m', // Blanco
+    default: '\x1b[37m', // Blanco por defecto
 };
 
 // Colores para los códigos de estado HTTP
 const statusCodeColors = {
-  '2': '\x1b[32m',     // 2xx - Verde
-  '3': '\x1b[36m',     // 3xx - Cyan
-  '4': '\x1b[33m',     // 4xx - Amarillo
-  '5': '\x1b[31m',     // 5xx - Rojo
-  default: '\x1b[37m'  // Default - Blanco
+    2: '\x1b[32m', // 2xx - Verde
+    3: '\x1b[36m', // 3xx - Cyan
+    4: '\x1b[33m', // 4xx - Amarillo
+    5: '\x1b[31m', // 5xx - Rojo
+    default: '\x1b[37m', // Default - Blanco
 };
 
 // Reset color
@@ -133,41 +133,41 @@ const resetColor = '\x1b[0m';
 
 // Formato para request logging
 const requestLogFormat = (tokens, req, res) => {
-  const method = tokens.method(req, res);
-  const url = tokens.url(req, res);
-  const status = tokens.status(req, res);
-  const responseTime = tokens['response-time'](req, res);
-  const contentLength = tokens.res(req, res, 'content-length') || '0';
-  const methodColor = httpMethodColors[method] || httpMethodColors.default;
-  const statusColor = statusCodeColors[status ? status.charAt(0) : 'default'] || statusCodeColors.default;
-  
-  // Formato de la hora: HH:MM:SS
-  const now = new Date();
-  const timeFormatted = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-  
-  return {
-    formatted: `[${timeFormatted}] ${methodColor}${method}${resetColor} ${url} ${statusColor}${status}${resetColor} ${responseTime} ms - ${contentLength}`,
-    data: {
-      time: timeFormatted,
-      method,
-      url,
-      status,
-      responseTime: `${responseTime} ms`,
-      contentLength,
-      userAgent: tokens['user-agent'](req, res),
-      remoteAddr: tokens['remote-addr'](req, res),
-      date: tokens.date(req, res, 'iso')
-    }
-  };
+    const method = tokens.method(req, res);
+    const url = tokens.url(req, res);
+    const status = tokens.status(req, res);
+    const responseTime = tokens['response-time'](req, res);
+    const contentLength = tokens.res(req, res, 'content-length') || '0';
+    const methodColor = httpMethodColors[method] || httpMethodColors.default;
+    const statusColor = statusCodeColors[status ? status.charAt(0) : 'default'] || statusCodeColors.default;
+
+    // Formato de la hora: HH:MM:SS
+    const now = new Date();
+    const timeFormatted = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+    return {
+        formatted: `[${timeFormatted}] ${methodColor}${method}${resetColor} ${url} ${statusColor}${status}${resetColor} ${responseTime} ms - ${contentLength}`,
+        data: {
+            time: timeFormatted,
+            method,
+            url,
+            status,
+            responseTime: `${responseTime} ms`,
+            contentLength,
+            userAgent: tokens['user-agent'](req, res),
+            remoteAddr: tokens['remote-addr'](req, res),
+            date: tokens.date(req, res, 'iso'),
+        },
+    };
 };
 
 // Logger middleware para Morgan
-logger.httpRequestLogger = function() {
-  return function(tokens, req, res) {
-    const logData = requestLogFormat(tokens, req, res);
-    logger.http(logData.formatted, logData.data);
-    return logData.formatted;
-  };
+logger.httpRequestLogger = function () {
+    return function (tokens, req, res) {
+        const logData = requestLogFormat(tokens, req, res);
+        logger.http(logData.formatted, logData.data);
+        return logData.formatted;
+    };
 };
 
 // HTTP Logger configuration - attach as property to logger

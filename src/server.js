@@ -16,7 +16,7 @@ process.on('uncaughtException', (err) => {
 // Check configuration before starting
 const startServer = async () => {
     let configOk = true;
-    
+
     try {
         configOk = await runChecks();
     } catch (error) {

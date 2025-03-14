@@ -3,8 +3,8 @@ const path = require('path');
 
 // Parámetros que debería proporcionar el usuario
 const guideName = process.argv[2]; // Por ejemplo: "troubleshooting"
-const guideTitle = process.argv[3] || "Nueva Guía"; // Por ejemplo: "Solución de Problemas"
-const guideEmoji = process.argv[4] || "📝"; // Por ejemplo: "🔧"
+const guideTitle = process.argv[3] || 'Nueva Guía'; // Por ejemplo: "Solución de Problemas"
+const guideEmoji = process.argv[4] || '📝'; // Por ejemplo: "🔧"
 
 if (!guideName) {
     console.error('Error: Debes proporcionar un nombre para la guía.');

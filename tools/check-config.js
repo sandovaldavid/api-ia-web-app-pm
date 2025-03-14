@@ -24,8 +24,8 @@ if (typeof chalk !== 'function' && !chalk.blue) {
         bold: {
             blue: (text) => `\x1b[1m\x1b[34m${text}\x1b[0m`,
             green: (text) => `\x1b[1m\x1b[32m${text}\x1b[0m`,
-            red: (text) => `\x1b[1m\x1b[31m${text}\x1b[0m`
-        }
+            red: (text) => `\x1b[1m\x1b[31m${text}\x1b[0m`,
+        },
     };
 }
 

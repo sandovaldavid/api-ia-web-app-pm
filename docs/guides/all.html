@@ -1,235 +1,238 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>API Intermediaria IA - Todas las Guías</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-        body {
-            padding-bottom: 2rem;
-        }
-        .hero {
-            background-color: #f8f9fa;
-            padding: 3rem 0;
-            margin-bottom: 2rem;
-        }
-        .feature-icon {
-            font-size: 2.5rem;
-            color: #0d6efd;
-            margin-bottom: 1rem;
-        }
-        .feature-box {
-            padding: 1.5rem;
-            background-color: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            height: 100%;
-        }
-        .footer {
-            margin-top: 3rem;
-            padding: 2rem 0;
-            background-color: #f8f9fa;
-        }
-        .category-header {
-            margin-top: 3rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #dee2e6;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/docs">🤖 API Intermediaria IA</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../index.html">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../api/index.html">API Docs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="../guides/index.html">API Guides</a>
-                    </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link"
-                            href="https://github.com/sandovaldavid/api-ia-web-app-pm"
-                            target="_blank"
-                            >GitHub</a
-                        >
-                    </li>
-                </ul>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>API Intermediaria IA - Todas las Guías</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <style>
+            body {
+                padding-bottom: 2rem;
+            }
+            .hero {
+                background-color: #f8f9fa;
+                padding: 3rem 0;
+                margin-bottom: 2rem;
+            }
+            .feature-icon {
+                font-size: 2.5rem;
+                color: #0d6efd;
+                margin-bottom: 1rem;
+            }
+            .feature-box {
+                padding: 1.5rem;
+                background-color: #fff;
+                border-radius: 0.5rem;
+                box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+                height: 100%;
+            }
+            .footer {
+                margin-top: 3rem;
+                padding: 2rem 0;
+                background-color: #f8f9fa;
+            }
+            .category-header {
+                margin-top: 3rem;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.5rem;
+                border-bottom: 1px solid #dee2e6;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="/docs">🤖 API Intermediaria IA</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="../index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../api/index.html">API Docs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="../guides/index.html">API Guides</a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="https://github.com/sandovaldavid/api-ia-web-app-pm"
+                                target="_blank"
+                                >GitHub</a
+                            >
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
-
-    <div class="hero text-center">
-        <div class="container">
-            <h1 class="display-4">Todas las Guías</h1>
-            <p class="lead">
-                Explora nuestra colección completa de guías y tutoriales para dominar la plataforma API Intermediaria IA
-            </p>
-        </div>
-    </div>
-
-    <div class="container">
-        <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="index.html">Guías</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Todas las Guías</li>
-            </ol>
         </nav>
-        
-        <h2 class="category-header">Comenzando</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🚀 Guía de Inicio Rápido</h5>
-                        <p class="card-text">Comienza a utilizar la API en minutos con esta guía básica.</p>
-                        <a href="getting-started.html" class="btn btn-primary">Ver Guía</a>
+
+        <div class="hero text-center">
+            <div class="container">
+                <h1 class="display-4">Todas las Guías</h1>
+                <p class="lead">
+                    Explora nuestra colección completa de guías y tutoriales para dominar la plataforma API
+                    Intermediaria IA
+                </p>
+            </div>
+        </div>
+
+        <div class="container">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Guías</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Todas las Guías</li>
+                </ol>
+            </nav>
+
+            <h2 class="category-header">Comenzando</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🚀 Guía de Inicio Rápido</h5>
+                            <p class="card-text">Comienza a utilizar la API en minutos con esta guía básica.</p>
+                            <a href="getting-started.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔐 Autenticación</h5>
+                            <p class="card-text">Aprende cómo autenticar tus solicitudes a la API.</p>
+                            <a href="authentication.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">📋 Trabajando con Proyectos</h5>
+                            <p class="card-text">Comprende cómo crear y gestionar proyectos con la API.</p>
+                            <a href="projects.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🔐 Autenticación</h5>
-                        <p class="card-text">Aprende cómo autenticar tus solicitudes a la API.</p>
-                        <a href="authentication.html" class="btn btn-primary">Ver Guía</a>
+            <h2 class="category-header">Temas Avanzados</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🧠 Entrenamiento de Modelos</h5>
+                            <p class="card-text">Aprende a entrenar modelos personalizados con tus datos.</p>
+                            <a href="model-training.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔄 Procesamiento por Lotes</h5>
+                            <p class="card-text">Procesa grandes cantidades de datos de manera eficiente.</p>
+                            <a href="batch-processing.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔔 Configuración de Webhooks</h5>
+                            <p class="card-text">Configura webhooks para notificaciones en tiempo real.</p>
+                            <a href="webhooks.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">📋 Trabajando con Proyectos</h5>
-                        <p class="card-text">Comprende cómo crear y gestionar proyectos con la API.</p>
-                        <a href="projects.html" class="btn btn-primary">Ver Guía</a>
+            <h2 class="category-header">Integraciones</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔌 Integraciones con Terceros</h5>
+                            <p class="card-text">Conecta API IA con otros servicios populares.</p>
+                            <a href="integrations.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">💻 Uso de SDK</h5>
+                            <p class="card-text">Aprende a usar nuestro SDK en diferentes lenguajes de programación.</p>
+                            <a href="sdk-usage.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">💬 Sistema de Chat</h5>
+                            <p class="card-text">Aprende a utilizar el sistema de chat con IA para tus proyectos.</p>
+                            <a href="chat-system.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="category-header">Mejores Prácticas</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">⚡ Optimización de Rendimiento</h5>
+                            <p class="card-text">Consejos para maximizar el rendimiento con API IA.</p>
+                            <a href="performance.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🔒 Mejores Prácticas de Seguridad</h5>
+                            <p class="card-text">Asegura tu implementación de API IA.</p>
+                            <a href="security.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">🚀 Despliegue en Producción</h5>
+                            <p class="card-text">
+                                Guía para desplegar la API en un entorno de producción de manera segura.
+                            </p>
+                            <a href="deployment.html" class="btn btn-primary">Ver Guía</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <h2 class="category-header">Temas Avanzados</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🧠 Entrenamiento de Modelos</h5>
-                        <p class="card-text">Aprende a entrenar modelos personalizados con tus datos.</p>
-                        <a href="model-training.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🔄 Procesamiento por Lotes</h5>
-                        <p class="card-text">Procesa grandes cantidades de datos de manera eficiente.</p>
-                        <a href="batch-processing.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
+        <footer class="footer">
+            <div class="container text-center">
+                <p>🤖 API Intermediaria IA para Gestión de Proyectos - v1.0.0</p>
+                <p>
+                    Desarrollado por <a href="https://github.com/sandovaldavid" target="_blank">sandovaldavid</a> y
+                    <a href="https://github.com/MoisesAmen" target="_blank">MoisesAmen</a>
+                </p>
             </div>
+        </footer>
 
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🔔 Configuración de Webhooks</h5>
-                        <p class="card-text">Configura webhooks para notificaciones en tiempo real.</p>
-                        <a href="webhooks.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <h2 class="category-header">Integraciones</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🔌 Integraciones con Terceros</h5>
-                        <p class="card-text">Conecta API IA con otros servicios populares.</p>
-                        <a href="integrations.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">💻 Uso de SDK</h5>
-                        <p class="card-text">Aprende a usar nuestro SDK en diferentes lenguajes de programación.</p>
-                        <a href="sdk-usage.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">💬 Sistema de Chat</h5>
-                        <p class="card-text">Aprende a utilizar el sistema de chat con IA para tus proyectos.</p>
-                        <a href="chat-system.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <h2 class="category-header">Mejores Prácticas</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">⚡ Optimización de Rendimiento</h5>
-                        <p class="card-text">Consejos para maximizar el rendimiento con API IA.</p>
-                        <a href="performance.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🔒 Mejores Prácticas de Seguridad</h5>
-                        <p class="card-text">Asegura tu implementación de API IA.</p>
-                        <a href="security.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">🚀 Despliegue en Producción</h5>
-                        <p class="card-text">Guía para desplegar la API en un entorno de producción de manera segura.</p>
-                        <a href="deployment.html" class="btn btn-primary">Ver Guía</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="footer">
-        <div class="container text-center">
-            <p>🤖 API Intermediaria IA para Gestión de Proyectos - v1.0.0</p>
-            <p>
-                Desarrollado por <a href="https://github.com/sandovaldavid" target="_blank">sandovaldavid</a> y
-                <a href="https://github.com/MoisesAmen" target="_blank">MoisesAmen</a>
-            </p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

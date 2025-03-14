@@ -181,7 +181,12 @@
     padding: 8px 12px;
     margin: 8px 0;
     white-space: pre-wrap;
-    font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
+    font-family:
+        SFMono-Regular,
+        Consolas,
+        Liberation Mono,
+        Menlo,
+        monospace;
     font-size: 12px;
     overflow-x: auto;
 }

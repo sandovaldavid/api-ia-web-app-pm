@@ -72,7 +72,7 @@ paths:
                 500:
                     $ref: '#/components/responses/ServerError'
             security: []
-            
+
     /auth/login:
         post:
             tags:
@@ -109,7 +109,7 @@ paths:
                 500:
                     $ref: '#/components/responses/ServerError'
             security: []
-            
+
     /auth/me:
         get:
             tags:
@@ -134,7 +134,7 @@ paths:
                     $ref: '#/components/responses/UnauthorizedError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     # Task paths
     /tasks/{taskId}/parameterize:
         get:
@@ -166,7 +166,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /tasks/{taskId}/code-suggestion:
         post:
             tags:
@@ -209,7 +209,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /tasks/{taskId}/messages:
         get:
             tags:
@@ -245,7 +245,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     # Resource paths
     /resources/assign/{taskId}:
         get:
@@ -281,7 +281,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /resources/project/{projectId}:
         get:
             tags:
@@ -321,7 +321,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     # Chat paths
     /chats:
         get:
@@ -351,7 +351,7 @@ paths:
                     $ref: '#/components/responses/UnauthorizedError'
                 500:
                     $ref: '#/components/responses/ServerError'
-        
+
         post:
             tags:
                 - Chats
@@ -383,7 +383,7 @@ paths:
                     $ref: '#/components/responses/UnauthorizedError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /chats/{id}:
         get:
             tags:
@@ -414,7 +414,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-        
+
         put:
             tags:
                 - Chats
@@ -450,7 +450,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-        
+
         delete:
             tags:
                 - Chats
@@ -470,7 +470,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /chats/{id}/archive:
         patch:
             tags:
@@ -491,7 +491,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /chats/{chatId}/messages:
         get:
             tags:
@@ -512,7 +512,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-        
+
         post:
             tags:
                 - Mensajes
@@ -540,7 +540,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     # Health path
     /health:
         get:
@@ -577,7 +577,7 @@ paths:
                                                 example: 'connected'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     # Monitor path
     /monitor/stats:
         get:
@@ -652,7 +652,7 @@ paths:
                     $ref: '#/components/responses/UnauthorizedError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
     /projects/{projectId}:
         get:
             tags:
@@ -681,7 +681,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     /projects/{projectId}/tasks:
         get:
             tags:
@@ -720,7 +720,7 @@ paths:
                     $ref: '#/components/responses/NotFoundError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     # AI Models configuration
     /ai/models:
         get:
@@ -748,7 +748,7 @@ paths:
                     $ref: '#/components/responses/UnauthorizedError'
                 500:
                     $ref: '#/components/responses/ServerError'
-    
+
     /ai/settings:
         get:
             tags:
@@ -773,7 +773,7 @@ paths:
                     $ref: '#/components/responses/UnauthorizedError'
                 500:
                     $ref: '#/components/responses/ServerError'
-                    
+
         put:
             tags:
                 - AI
@@ -835,7 +835,7 @@ paths:
                     $ref: '#/components/responses/BadRequestError'
                 500:
                     $ref: '#/components/responses/ServerError'
-            security: []  # No authentication required for webhooks
+            security: [] # No authentication required for webhooks
 
     /webhooks/task-update:
         post:
@@ -865,7 +865,7 @@ paths:
                     $ref: '#/components/responses/BadRequestError'
                 500:
                     $ref: '#/components/responses/ServerError'
-            security: []  # No authentication required for webhooks
+            security: [] # No authentication required for webhooks
 
 components:
     schemas:
@@ -1270,7 +1270,7 @@ components:
                                 example: true
                             data:
                                 type: object
-                                
+
         BadRequestError:
             description: Error en la solicitud
             content:
@@ -1284,7 +1284,7 @@ components:
                             error:
                                 type: string
                                 example: 'Datos de solicitud inválidos'
-                                
+
         UnauthorizedError:
             description: No autorizado
             content:
@@ -1298,7 +1298,7 @@ components:
                             error:
                                 type: string
                                 example: 'Acceso no autorizado'
-                                
+
         ForbiddenError:
             description: Acceso prohibido
             content:
@@ -1312,7 +1312,7 @@ components:
                             error:
                                 type: string
                                 example: 'No tiene permisos para acceder a este recurso'
-                                
+
         NotFoundError:
             description: Recurso no encontrado
             content:
@@ -1326,7 +1326,7 @@ components:
                             error:
                                 type: string
                                 example: 'Recurso no encontrado'
-                                
+
         ServerError:
             description: Error del servidor
             content:
@@ -1349,7 +1349,7 @@ components:
             description: ID del recurso
             schema:
                 type: string
-                
+
         taskIdParam:
             name: taskId
             in: path
@@ -1357,7 +1357,7 @@ components:
             description: ID de la tarea
             schema:
                 type: string
-                
+
         chatIdParam:
             name: chatId
             in: path
@@ -1365,7 +1365,7 @@ components:
             description: ID del chat
             schema:
                 type: string
-                
+
         projectIdParam:
             name: projectId
             in: path
@@ -1373,7 +1373,7 @@ components:
             description: ID del proyecto
             schema:
                 type: string
-                
+
         statusParam:
             name: status
             in: query
