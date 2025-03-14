@@ -10,7 +10,7 @@ const monitorRoutes = require('./monitorRoutes');
 const router = express.Router();
 
 // Register all routes
-router.use('/users', userRoutes);
+router.use('/auth', userRoutes);
 router.use('/chats', chatRoutes);
 router.use('/tasks', taskRoutes);
 router.use('/resources', resourceRoutes);
