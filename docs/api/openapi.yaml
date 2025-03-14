@@ -9,68 +9,1380 @@ info:
         name: David Sandoval
         email: soporte@api-intermediaria.com
     license:
-        name: MIT
-        url: https://opensource.org/licenses/MIT
+        name: Apache License, Version 2.0
+        url: https://opensource.org/license/apache-2-0
 
 tags:
-    - name: Auth
+    - name: Autenticación
       description: Autenticación y gestión de usuarios
     - name: Chats
       description: Gestión de conversaciones con IA
-    - name: Messages
+    - name: Mensajes
       description: Mensajes dentro de las conversaciones con IA
-    - name: Tasks
+    - name: Tareas
       description: Operaciones relacionadas con tareas y proyectos
-    - name: Resources
+    - name: Recursos
       description: Gestión de recursos y asignaciones
     - name: Health
       description: Endpoints para verificación del estado del sistema
     - name: Monitor
       description: Monitoreo y métricas del sistema
+    - name: AI
+      description: Configuración y gestión de modelos de IA
+    - name: Webhooks
+      description: Endpoints para integración con sistemas externos
 
 servers:
     - url: /api
       description: Servidor actual
 
 paths:
-    # Importar definiciones de rutas
-    /auth:
-        $ref: './paths/auth.yaml'
-    /tasks:
-        $ref: './paths/tasks.yaml'
-    /resources:
-        $ref: './paths/resources.yaml'
-    /messages:
-        $ref: './paths/messages.yaml'
+    # Auth paths
+    /auth/register:
+        post:
+            tags:
+                - Autenticación
+            summary: Registrar nuevo usuario
+            description: Crea una nueva cuenta de usuario en el sistema
+            operationId: registerUser
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserRegistration'
+            responses:
+                201:
+                    description: Usuario registrado exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    token:
+                                        type: string
+                                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                                    user:
+                                        $ref: '#/components/schemas/User'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+            security: []
+            
+    /auth/login:
+        post:
+            tags:
+                - Autenticación
+            summary: Iniciar sesión
+            description: Autentica un usuario y devuelve un token JWT para futuras solicitudes
+            operationId: loginUser
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserLogin'
+            responses:
+                200:
+                    description: Inicio de sesión exitoso
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    token:
+                                        type: string
+                                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                                    user:
+                                        $ref: '#/components/schemas/User'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+            security: []
+            
+    /auth/me:
+        get:
+            tags:
+                - Autenticación
+            summary: Obtener usuario actual
+            description: Obtiene información del usuario autenticado actualmente
+            operationId: getCurrentUser
+            responses:
+                200:
+                    description: Información del usuario obtenida exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/User'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    # Task paths
+    /tasks/{taskId}/parameterize:
+        get:
+            tags:
+                - Tareas
+            summary: Parametrizar una tarea
+            description: Analiza una tarea y devuelve parámetros como tipo, complejidad y tiempo estimado
+            operationId: parameterizeTask
+            parameters:
+                - $ref: '#/components/parameters/taskIdParam'
+            responses:
+                200:
+                    description: Parametrización exitosa
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/TaskParameters'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /tasks/{taskId}/code-suggestion:
+        post:
+            tags:
+                - Tareas
+            summary: Generar sugerencia de código para una tarea
+            description: Envía un prompt a la IA para obtener sugerencias de código basadas en una tarea
+            operationId: generateCodeSuggestion
+            parameters:
+                - $ref: '#/components/parameters/taskIdParam'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                prompt:
+                                    type: string
+                                    description: Prompt para generar código
+                                    example: 'Escribe una función en JavaScript para sumar dos números'
+            responses:
+                200:
+                    description: Sugerencia de código generada exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: string
+                                        example: 'function sumar(a, b) { return a + b; }'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /tasks/{taskId}/messages:
+        get:
+            tags:
+                - Tareas
+            summary: Obtener historial de mensajes para una tarea
+            description: Obtiene todos los mensajes relacionados con una tarea específica
+            operationId: getTaskMessages
+            parameters:
+                - $ref: '#/components/parameters/taskIdParam'
+            responses:
+                200:
+                    description: Historial de mensajes obtenido exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    count:
+                                        type: integer
+                                        example: 3
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Message'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    # Resource paths
+    /resources/assign/{taskId}:
+        get:
+            tags:
+                - Recursos
+            summary: Asignar recursos a una tarea
+            description: Asigna los mejores recursos disponibles a una tarea específica
+            operationId: assignResourceToTask
+            parameters:
+                - $ref: '#/components/parameters/taskIdParam'
+            responses:
+                200:
+                    description: Recursos asignados exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: object
+                                        properties:
+                                            asignacion:
+                                                type: string
+                                                example: 'Juan Pérez'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /resources/project/{projectId}:
+        get:
+            tags:
+                - Recursos
+            summary: Asignar recursos a un proyecto
+            description: Asigna los mejores recursos disponibles a todas las tareas de un proyecto
+            operationId: assignResourceToProject
+            parameters:
+                - $ref: '#/components/parameters/projectIdParam'
+            responses:
+                200:
+                    description: Recursos asignados exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: object
+                                        properties:
+                                            proyecto:
+                                                type: string
+                                                example: 'Proyecto de ejemplo'
+                                            equipo_sugerido:
+                                                type: array
+                                                items:
+                                                    type: string
+                                                example: ['Nombre1', 'Nombre2']
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    # Chat paths
+    /chats:
+        get:
+            tags:
+                - Chats
+            summary: Obtener todos los chats
+            description: Obtiene todos los chats del usuario autenticado
+            operationId: getChats
+            parameters:
+                - $ref: '#/components/parameters/statusParam'
+            responses:
+                200:
+                    description: Chats obtenidos exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Chat'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+        
+        post:
+            tags:
+                - Chats
+            summary: Crear un nuevo chat
+            description: Crea un nuevo chat para el usuario autenticado
+            operationId: createChat
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateChat'
+            responses:
+                201:
+                    description: Chat creado exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/Chat'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /chats/{id}:
+        get:
+            tags:
+                - Chats
+            summary: Obtener un chat por ID
+            description: Obtiene un chat específico por su ID
+            operationId: getChat
+            parameters:
+                - $ref: '#/components/parameters/idParam'
+            responses:
+                200:
+                    description: Chat obtenido exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/Chat'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+        
+        put:
+            tags:
+                - Chats
+            summary: Actualizar un chat
+            description: Actualiza un chat específico por su ID
+            operationId: updateChat
+            parameters:
+                - $ref: '#/components/parameters/idParam'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                title:
+                                    type: string
+                                    example: 'Nuevo título del chat'
+                                status:
+                                    type: string
+                                    enum: [active, archived]
+                                    example: 'active'
+            responses:
+                200:
+                    $ref: '#/components/responses/SuccessResponse'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+        
+        delete:
+            tags:
+                - Chats
+            summary: Eliminar un chat
+            description: Elimina un chat específico por su ID
+            operationId: deleteChat
+            parameters:
+                - $ref: '#/components/parameters/idParam'
+            responses:
+                200:
+                    $ref: '#/components/responses/SuccessResponse'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /chats/{id}/archive:
+        patch:
+            tags:
+                - Chats
+            summary: Archivar un chat
+            description: Archiva un chat específico por su ID
+            operationId: archiveChat
+            parameters:
+                - $ref: '#/components/parameters/idParam'
+            responses:
+                200:
+                    $ref: '#/components/responses/SuccessResponse'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /chats/{chatId}/messages:
+        get:
+            tags:
+                - Mensajes
+            summary: Obtener todos los mensajes de un chat
+            description: Obtiene todos los mensajes de un chat específico
+            operationId: getChatMessages
+            parameters:
+                - $ref: '#/components/parameters/chatIdParam'
+            responses:
+                200:
+                    $ref: '#/components/responses/SuccessResponse'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+        
+        post:
+            tags:
+                - Mensajes
+            summary: Crear un nuevo mensaje en un chat
+            description: Crea un nuevo mensaje en un chat específico
+            operationId: createChatMessage
+            parameters:
+                - $ref: '#/components/parameters/chatIdParam'
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateMessage'
+            responses:
+                201:
+                    $ref: '#/components/responses/SuccessResponse'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    # Health path
     /health:
-        $ref: './paths/health.yaml'
-    /monitor:
-        $ref: './paths/monitor.yaml'
+        get:
+            tags:
+                - Health
+            summary: Verificar estado del sistema
+            description: Verifica que el sistema esté funcionando correctamente
+            operationId: checkHealth
+            responses:
+                200:
+                    description: Sistema funcionando correctamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    status:
+                                        type: string
+                                        example: 'ok'
+                                    version:
+                                        type: string
+                                        example: '1.0.0'
+                                    services:
+                                        type: object
+                                        properties:
+                                            mongodb:
+                                                type: string
+                                                example: 'connected'
+                                            ollama:
+                                                type: string
+                                                example: 'connected'
+                                            djangoApi:
+                                                type: string
+                                                example: 'connected'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    # Monitor path
+    /monitor/stats:
+        get:
+            tags:
+                - Monitor
+            summary: Obtener estadísticas del sistema
+            description: Obtiene estadísticas de uso del sistema
+            operationId: getStats
+            responses:
+                200:
+                    description: Estadísticas obtenidas exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: object
+                                        properties:
+                                            users:
+                                                type: integer
+                                                example: 25
+                                            chats:
+                                                type: integer
+                                                example: 120
+                                            messages:
+                                                type: integer
+                                                example: 1450
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                403:
+                    $ref: '#/components/responses/ForbiddenError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+
+    # Project Integration paths
+    /projects:
+        get:
+            tags:
+                - Tareas
+            summary: Obtener todos los proyectos
+            description: Obtiene la lista de proyectos disponibles en el sistema
+            operationId: getProjects
+            parameters:
+                - name: status
+                  in: query
+                  required: false
+                  description: Estado de los proyectos (active/completed/all)
+                  schema:
+                      type: string
+                      enum: [active, completed, all]
+                      default: active
+            responses:
+                200:
+                    description: Proyectos obtenidos exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Project'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+    /projects/{projectId}:
+        get:
+            tags:
+                - Tareas
+            summary: Obtener un proyecto específico
+            description: Obtiene detalles de un proyecto específico por su ID
+            operationId: getProjectById
+            parameters:
+                - $ref: '#/components/parameters/projectIdParam'
+            responses:
+                200:
+                    description: Proyecto obtenido exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/Project'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    /projects/{projectId}/tasks:
+        get:
+            tags:
+                - Tareas
+            summary: Obtener todas las tareas de un proyecto
+            description: Obtiene la lista de tareas pertenecientes a un proyecto específico
+            operationId: getProjectTasks
+            parameters:
+                - $ref: '#/components/parameters/projectIdParam'
+                - name: status
+                  in: query
+                  required: false
+                  description: Estado de las tareas (pending/in_progress/completed/all)
+                  schema:
+                      type: string
+                      enum: [pending, in_progress, completed, all]
+                      default: all
+            responses:
+                200:
+                    description: Tareas obtenidas exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/Task'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                404:
+                    $ref: '#/components/responses/NotFoundError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    # AI Models configuration
+    /ai/models:
+        get:
+            tags:
+                - AI
+            summary: Obtener modelos de IA disponibles
+            description: Obtiene la lista de modelos de IA disponibles en el sistema
+            operationId: getAIModels
+            responses:
+                200:
+                    description: Modelos obtenidos exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/AIModel'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+    
+    /ai/settings:
+        get:
+            tags:
+                - AI
+            summary: Obtener configuración de IA
+            description: Obtiene la configuración actual de IA para el usuario
+            operationId: getAISettings
+            responses:
+                200:
+                    description: Configuración obtenida exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/AISettings'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+                    
+        put:
+            tags:
+                - AI
+            summary: Actualizar configuración de IA
+            description: Actualiza la configuración de IA para el usuario
+            operationId: updateAISettings
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AISettings'
+            responses:
+                200:
+                    description: Configuración actualizada exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                                    data:
+                                        $ref: '#/components/schemas/AISettings'
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                401:
+                    $ref: '#/components/responses/UnauthorizedError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+
+    # Add webhook endpoints for integration with project management systems
+    /webhooks/project-update:
+        post:
+            tags:
+                - Webhooks
+            summary: Recibir actualizaciones de proyecto
+            description: Endpoint para recibir actualizaciones de proyectos desde sistemas externos
+            operationId: receiveProjectUpdate
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ProjectWebhook'
+            responses:
+                200:
+                    description: Actualización recibida exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+            security: []  # No authentication required for webhooks
+
+    /webhooks/task-update:
+        post:
+            tags:
+                - Webhooks
+            summary: Recibir actualizaciones de tareas
+            description: Endpoint para recibir actualizaciones de tareas desde sistemas externos
+            operationId: receiveTaskUpdate
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TaskWebhook'
+            responses:
+                200:
+                    description: Actualización recibida exitosamente
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    success:
+                                        type: boolean
+                                        example: true
+                400:
+                    $ref: '#/components/responses/BadRequestError'
+                500:
+                    $ref: '#/components/responses/ServerError'
+            security: []  # No authentication required for webhooks
 
 components:
     schemas:
-        # Instead of direct file reference, individual schemas should be referenced
-        # in the actual component files using $ref
         User:
-            $ref: './components/schemas.yaml#/User'
+            type: object
+            required:
+                - name
+                - email
+            properties:
+                id:
+                    type: string
+                    description: ID único del usuario
+                name:
+                    type: string
+                    example: 'Juan Pérez'
+                email:
+                    type: string
+                    format: email
+                    example: 'juan@example.com'
+                role:
+                    type: string
+                    enum: [user, admin]
+                    default: user
+                createdAt:
+                    type: string
+                    format: date-time
+
+        Chat:
+            type: object
+            required:
+                - title
+                - user
+            properties:
+                id:
+                    type: string
+                    description: ID único del chat
+                title:
+                    type: string
+                    example: 'Análisis de Proyecto X'
+                user:
+                    type: string
+                    description: ID del usuario propietario
+                projectId:
+                    type: string
+                    description: ID del proyecto relacionado (opcional)
+                    nullable: true
+                taskId:
+                    type: string
+                    description: ID de la tarea relacionada (opcional)
+                    nullable: true
+                status:
+                    type: string
+                    enum: [active, archived]
+                    default: active
+                lastMessage:
+                    type: string
+                    format: date-time
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+
+        Message:
+            type: object
+            required:
+                - chat
+                - user
+                - requestType
+            properties:
+                id:
+                    type: string
+                    description: ID único del mensaje
+                chat:
+                    type: string
+                    description: ID del chat al que pertenece el mensaje
+                user:
+                    type: string
+                    description: ID del usuario que envió el mensaje
+                requestType:
+                    type: string
+                    enum:
+                        [
+                            user_message,
+                            ai_response,
+                            code_suggestion,
+                            task_parameterization,
+                            project_context,
+                            resource_assignment,
+                        ]
+                prompt:
+                    type: string
+                    description: Texto enviado por el usuario
+                    nullable: true
+                response:
+                    type: object
+                    nullable: true
+                    properties:
+                        content:
+                            type: string
+                            description: Contenido de la respuesta de la IA
+                        model:
+                            type: string
+                            description: Modelo de IA utilizado
+                        time:
+                            type: integer
+                            description: Tiempo de respuesta en ms
+                taskId:
+                    type: string
+                    nullable: true
+                projectId:
+                    type: string
+                    nullable: true
+                createdAt:
+                    type: string
+                    format: date-time
+
         Task:
-            $ref: './components/schemas.yaml#/Task'
+            type: object
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                description:
+                    type: string
+                status:
+                    type: string
+                priority:
+                    type: string
+                project:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                        name:
+                            type: string
+
         Resource:
-            $ref: './components/schemas.yaml#/Resource'
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                role:
+                    type: string
+                experience:
+                    type: string
+                technologies:
+                    type: array
+                    items:
+                        type: string
+                availability:
+                    type: number
+                    format: float
+                    description: Disponibilidad del recurso (0-1)
+
+        UserRegistration:
+            type: object
+            required:
+                - name
+                - email
+                - password
+            properties:
+                name:
+                    type: string
+                    minLength: 3
+                    maxLength: 50
+                    example: 'Juan Pérez'
+                email:
+                    type: string
+                    format: email
+                    example: 'juan@example.com'
+                password:
+                    type: string
+                    format: password
+                    minLength: 6
+                    example: 'password123'
+                role:
+                    type: string
+                    enum: [user, admin]
+                    default: user
+
+        UserLogin:
+            type: object
+            required:
+                - email
+                - password
+            properties:
+                email:
+                    type: string
+                    format: email
+                    example: 'juan@example.com'
+                password:
+                    type: string
+                    format: password
+                    example: 'password123'
+
+        CreateChat:
+            type: object
+            required:
+                - title
+            properties:
+                title:
+                    type: string
+                    minLength: 3
+                    maxLength: 100
+                    example: 'Consulta sobre arquitectura'
+                projectId:
+                    type: string
+                    nullable: true
+                taskId:
+                    type: string
+                    nullable: true
+
+        CreateMessage:
+            type: object
+            required:
+                - prompt
+            properties:
+                prompt:
+                    type: string
+                    example: '¿Cómo puedo implementar autenticación JWT en una API Node.js?'
+                requestType:
+                    type: string
+                    enum: [user_message, code_suggestion, task_parameterization, project_context]
+                    default: user_message
+                projectId:
+                    type: string
+                    nullable: true
+                taskId:
+                    type: string
+                    nullable: true
+
+        TaskParameters:
+            type: object
+            properties:
+                complejidad:
+                    type: string
+                    enum: [baja, media, alta, muy alta]
+                    description: Nivel de complejidad estimada de la tarea
+                    example: 'media'
+                tipo:
+                    type: string
+                    description: Categoría o tipo de tarea
+                    example: 'desarrollo frontend'
+                tiempoEstimado:
+                    type: object
+                    properties:
+                        minimo:
+                            type: integer
+                            description: Tiempo mínimo estimado en horas
+                            example: 4
+                        maximo:
+                            type: integer
+                            description: Tiempo máximo estimado en horas
+                            example: 8
+                tecnologias:
+                    type: array
+                    description: Tecnologías requeridas para la tarea
+                    items:
+                        type: string
+                    example: ['React', 'JavaScript', 'CSS']
+                recomendaciones:
+                    type: string
+                    description: Recomendaciones adicionales
+                    example: 'Se recomienda dividir la tarea en subtareas más pequeñas'
+
+        Project:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID único del proyecto
+                name:
+                    type: string
+                    example: 'Sistema de Gestión de Ventas'
+                description:
+                    type: string
+                    example: 'Desarrollo de un sistema de gestión de ventas para la empresa XYZ'
+                status:
+                    type: string
+                    enum: [active, completed, cancelled]
+                    example: 'active'
+                startDate:
+                    type: string
+                    format: date
+                    example: '2023-01-15'
+                endDate:
+                    type: string
+                    format: date
+                    nullable: true
+                    example: '2023-06-30'
+                owner:
+                    type: string
+                    description: ID del usuario propietario del proyecto
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+
+        AIModel:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: ID único del modelo
+                name:
+                    type: string
+                    example: 'Llama2-7B'
+                description:
+                    type: string
+                    example: 'Modelo ligero para asistencia general'
+                version:
+                    type: string
+                    example: '2.0'
+                capabilities:
+                    type: array
+                    items:
+                        type: string
+                    example: ['chat', 'code_generation', 'task_analysis']
+                contextSize:
+                    type: integer
+                    example: 4096
+
+        AISettings:
+            type: object
+            properties:
+                defaultModel:
+                    type: string
+                    example: 'Llama2-7B'
+                temperature:
+                    type: number
+                    format: float
+                    example: 0.7
+                maxTokens:
+                    type: integer
+                    example: 2048
+                projectContext:
+                    type: boolean
+                    description: Si se debe incluir el contexto de proyecto en las consultas
+                    example: true
+                codeAssistance:
+                    type: boolean
+                    description: Si se debe proporcionar asistencia de código
+                    example: true
+
+        ProjectWebhook:
+            type: object
+            required:
+                - project
+                - action
+            properties:
+                project:
+                    $ref: '#/components/schemas/Project'
+                action:
+                    type: string
+                    enum: [created, updated, deleted]
+                    example: 'updated'
+                timestamp:
+                    type: string
+                    format: date-time
+                source:
+                    type: string
+                    description: Sistema de origen de la actualización
+                    example: 'Jira'
+
+        TaskWebhook:
+            type: object
+            required:
+                - task
+                - action
+            properties:
+                task:
+                    $ref: '#/components/schemas/Task'
+                action:
+                    type: string
+                    enum: [created, updated, deleted, assigned]
+                    example: 'updated'
+                timestamp:
+                    type: string
+                    format: date-time
+                source:
+                    type: string
+                    description: Sistema de origen de la actualización
+                    example: 'Trello'
 
     responses:
-        # Similar approach for responses
-        NotFound:
-            $ref: './components/responses.yaml#/NotFound'
-        BadRequest:
-            $ref: './components/responses.yaml#/BadRequest'
-        Unauthorized:
-            $ref: './components/responses.yaml#/Unauthorized'
+        SuccessResponse:
+            description: Operación exitosa
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: true
+                            data:
+                                type: object
+                                
+        BadRequestError:
+            description: Error en la solicitud
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: false
+                            error:
+                                type: string
+                                example: 'Datos de solicitud inválidos'
+                                
+        UnauthorizedError:
+            description: No autorizado
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: false
+                            error:
+                                type: string
+                                example: 'Acceso no autorizado'
+                                
+        ForbiddenError:
+            description: Acceso prohibido
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: false
+                            error:
+                                type: string
+                                example: 'No tiene permisos para acceder a este recurso'
+                                
+        NotFoundError:
+            description: Recurso no encontrado
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: false
+                            error:
+                                type: string
+                                example: 'Recurso no encontrado'
+                                
+        ServerError:
+            description: Error del servidor
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            success:
+                                type: boolean
+                                example: false
+                            error:
+                                type: string
+                                example: 'Error interno del servidor'
 
     parameters:
-        # Similar approach for parameters
         idParam:
-            $ref: './components/parameters.yaml#/idParam'
+            name: id
+            in: path
+            required: true
+            description: ID del recurso
+            schema:
+                type: string
+                
+        taskIdParam:
+            name: taskId
+            in: path
+            required: true
+            description: ID de la tarea
+            schema:
+                type: string
+                
+        chatIdParam:
+            name: chatId
+            in: path
+            required: true
+            description: ID del chat
+            schema:
+                type: string
+                
+        projectIdParam:
+            name: projectId
+            in: path
+            required: true
+            description: ID del proyecto
+            schema:
+                type: string
+                
+        statusParam:
+            name: status
+            in: query
+            required: false
+            description: Estado de los recursos (active/archived)
+            schema:
+                type: string
+                enum: [active, archived]
+                default: active
 
     securitySchemes:
         BearerAuth:
