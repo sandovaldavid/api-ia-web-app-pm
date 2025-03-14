@@ -59,15 +59,11 @@ class AuthService {
         try {
             const { name, email, password } = userData;
 
-            // Hash password
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-
             // Crear usuario
             const user = await User.create({
                 name,
                 email,
-                password: hashedPassword,
+                password,
             });
 
             return user;
