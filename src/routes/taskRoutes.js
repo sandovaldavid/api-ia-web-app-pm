@@ -13,6 +13,8 @@ router
     .route('/:taskId/parameterize')
     .get(taskValidations.parameterize, validateRequest, taskController.parameterizeTask);
 
+router.route('/:taskId').get(taskController.getTaskById);
+
 // Documentation generation routes
 router
     .route('/:taskId/documentation')
