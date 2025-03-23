@@ -27,19 +27,72 @@ exports.parameterizeTask = async (req, res, next) => {
         }
 
         // Fetch task from Django API
+        logger.info(`Fetching task ${taskId} from Django API for parameterization`);
         const task = await djangoService.getTaskById(taskId);
 
         if (!task) {
             return next(new AppError('Task not found', 404));
         }
 
+        // Log task details to debug potential issues
+        logger.debug.info(`Mapped task data: ${JSON.stringify(task)}`);
+
+        // Check for required task properties
+        if (!task.title) {
+            logger.warn(`Task ${taskId} has no title, which may cause inaccurate parameterization`);
+        }
+
         // Generate prompt for task parameterization
         const prompt = promptTemplates.taskParameterizationPrompt(task);
+
+        // Log prompt for debugging
+        logger.debug.info(`Generated prompt for task parameterization: ${prompt}`);
 
         // Generate response using Ollama
         logger.info(`Parameterizing task ${taskId}: ${task.title}`);
 
         const response = await ollamaService.generateJSONCompletion(prompt, 'task parameterization JSON');
+
+        // Log the AI response for debugging
+        logger.debug.info(`Raw AI response: ${JSON.stringify(response)}`);
+
+        // Enhanced validation for response data
+        if (!response || !response.tarea) {
+            logger.warn(`Empty or invalid parameterization response for task ${taskId}`);
+
+            // Force fix the response if needed
+            if (response) {
+                if (!response.tarea || response.tarea === 'No title provided') {
+                    response.tarea = task.title;
+                }
+
+                if (!response.tiempo_estimado || response.tiempo_estimado === 'No estimate provided') {
+                    response.tiempo_estimado = task.estimatedDuration ? `${task.estimatedDuration} días` : '5 días';
+                }
+
+                if (!response.tipo || response.tipo === 'Unspecified') {
+                    response.tipo = task.typeDisplay || 'Backend';
+                }
+
+                if (!response.palabras_clave || response.palabras_clave.length === 0) {
+                    // Use tags if available
+                    response.palabras_clave =
+                        task.tags && task.tags.length > 0 ? task.tags : ['desarrollo', 'software'];
+                }
+
+                if (!response.complejidad || response.complejidad === '') {
+                    // Map difficulty (1-5) to complexity (Low, Medium, High)
+                    const difficultyMap = {
+                        1: 'Baja',
+                        2: 'Baja',
+                        3: 'Media',
+                        4: 'Alta',
+                        5: 'Alta',
+                    };
+                    response.complejidad = task.difficulty ? difficultyMap[task.difficulty] || 'Media' : 'Media';
+                }
+            }
+        }
 
         // Cache the result
         cacheService.set(cacheKey, response);
@@ -63,6 +116,18 @@ exports.generateDocumentation = async (req, res, next) => {
     try {
         const { taskId } = req.params;
 
+        // Check cache first
+        const cacheKey = `task_documentation_${taskId}`;
+        const cachedResult = cacheService.get(cacheKey);
+
+        if (cachedResult) {
+            logger.info(`Using cached documentation for task ${taskId}`);
+            return res.status(200).json({
+                success: true,
+                data: cachedResult,
+            });
+        }
+
         // Fetch task from Django API
         const task = await djangoService.getTaskById(taskId);
 
@@ -77,6 +142,13 @@ exports.generateDocumentation = async (req, res, next) => {
         logger.info(`Generating documentation for task ${taskId}: ${task.title}`);
 
         const response = await ollamaService.generateCompletion(prompt);
+
+        // Cache the result
+        cacheService.set(cacheKey, {
+            taskId,
+            taskTitle: task.title,
+            documentation: response,
+        });
 
         res.status(200).json({
             success: true,
