@@ -25,12 +25,51 @@ class DjangoService {
     async getTaskById(taskId) {
         try {
             logger.info(`Fetching task ${taskId} from Django API`);
-            logger.info(`URL: ${this.apiClient.getUri()}`);
-            logger.info(`Headers: ${JSON.stringify(this.apiClient.defaults.headers)}`);
-            logger.info(`Authorization: ${config.djangoApiToken}`);
             const response = await this.apiClient.get(`/tareas/${taskId}`);
+            
+            // Log the complete task data to diagnose what's available
             logger.info(`Task ${taskId} fetched successfully`);
-            return response.data;
+            logger.debug.info(`Raw task data from Django: ${JSON.stringify(response.data)}`);
+            
+            if (!response.data || Object.keys(response.data).length === 0) {
+                logger.warn(`Task ${taskId} data is empty or malformed`);
+                return null;
+            }
+            
+            // Map Django task fields to expected format in our application
+            const task = {
+                id: response.data.idtarea,
+                title: response.data.nombretarea,
+                description: response.data.descripcion,
+                status: response.data.estado,
+                statusDisplay: response.data.estado_display,
+                priority: response.data.prioridad,
+                priorityDisplay: response.data.prioridad_display,
+                type: response.data.tipo_tarea,
+                typeDisplay: response.data.tipo_tarea_nombre,
+                startDate: response.data.fechainicio,
+                endDate: response.data.fechafin,
+                estimatedDuration: response.data.duracionestimada,
+                actualDuration: response.data.duracionactual,
+                difficulty: response.data.dificultad,
+                phase: response.data.fase,
+                phaseDisplay: response.data.fase_nombre,
+                clarityOfRequirements: response.data.claridad_requisitos,
+                estimatedSize: response.data.tamaño_estimado,
+                estimatedCost: response.data.costoestimado,
+                actualCost: response.data.costoactual,
+                requirementId: response.data.idrequerimiento,
+                requirementDescription: response.data.requerimiento_descripcion,
+                createdAt: response.data.fechacreacion,
+                updatedAt: response.data.fechamodificacion,
+                tags: response.data.tags ? response.data.tags.split(',').map(tag => tag.trim()) : [],
+                project: {
+                    name: response.data.proyecto_nombre
+                }
+            };
+            
+            logger.debug.info(`Mapped task data: ${JSON.stringify(task)}`);
+            return task;
         } catch (error) {
             logger.error(`Error fetching task ${taskId}: ${error.message}`);
             throw error;
@@ -45,7 +84,7 @@ class DjangoService {
     async createTask(taskData) {
         try {
             logger.info(`Creating new task in Django API`);
-            const response = await this.apiClient.post('/api/tasks/', taskData);
+            const response = await this.apiClient.post('/tareas/', taskData);
             return response.data;
         } catch (error) {
             logger.error(`Error creating task: ${error.message}`);
@@ -62,7 +101,7 @@ class DjangoService {
     async updateTask(taskId, taskData) {
         try {
             logger.info(`Updating task ${taskId} in Django API`);
-            const response = await this.apiClient.put(`/api/tasks/${taskId}/`, taskData);
+            const response = await this.apiClient.put(`/tareas/${taskId}/`, taskData);
             return response.data;
         } catch (error) {
             logger.error(`Error updating task ${taskId}: ${error.message}`);
@@ -78,7 +117,7 @@ class DjangoService {
     async getTasksByProject(projectId) {
         try {
             logger.info(`Fetching tasks for project ${projectId}`);
-            const response = await this.apiClient.get(`/api/projects/${projectId}/tasks/`);
+            const response = await this.apiClient.get(`/proyectos/${projectId}/tareas/`);
             return response.data;
         } catch (error) {
             logger.error(`Error fetching tasks for project ${projectId}: ${error.message}`);
