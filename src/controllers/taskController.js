@@ -175,3 +175,127 @@ exports.analyzeProject = async (req, res, next) => {
         next(new AppError(`Error analyzing project: ${error.message}`, 500));
     }
 };
+
+/**
+ * @desc    Create a new task
+ * @route   POST /api/tasks
+ * @access  Private
+ */
+exports.createTask = async (req, res, next) => {
+    try {
+        // Extract task data from request body
+        const taskData = req.body;
+
+        logger.info(`Creating new task: ${taskData.title}`);
+
+        // Create task in Django API
+        const createdTask = await djangoService.createTask(taskData);
+
+        // If AI enhancement is requested, process with AI
+        if (req.query.enhance === 'true') {
+            logger.info(`Enhancing task with AI: ${createdTask.id}`);
+
+            // Generate prompt for task enhancement
+            const prompt = promptTemplates.taskEnhancementPrompt(createdTask);
+
+            // Get AI suggestions
+            const aiSuggestions = await ollamaService.generateJSONCompletion(prompt, 'task enhancement JSON');
+
+            // Update task with AI suggestions
+            const updatedTask = {
+                ...createdTask,
+                description: aiSuggestions.enhanced_description || createdTask.description,
+                priority: aiSuggestions.suggested_priority || createdTask.priority,
+                estimated_hours: aiSuggestions.estimated_hours || createdTask.estimated_hours,
+            };
+
+            // Update task in Django
+            const enhancedTask = await djangoService.updateTask(createdTask.id, updatedTask);
+
+            return res.status(201).json({
+                success: true,
+                message: 'Task created and enhanced with AI',
+                data: enhancedTask,
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'Task created successfully',
+            data: createdTask,
+        });
+    } catch (error) {
+        logger.error(`Error creating task: ${error.message}`);
+        next(new AppError(`Error creating task: ${error.message}`, 500));
+    }
+};
+
+/**
+ * @desc    Update an existing task
+ * @route   PUT /api/tasks/:taskId
+ * @access  Private
+ */
+exports.updateTask = async (req, res, next) => {
+    try {
+        const { taskId } = req.params;
+        const taskData = req.body;
+
+        // Check if task exists
+        const taskExists = await djangoService.getTaskById(taskId);
+
+        if (!taskExists) {
+            return next(new AppError('Task not found', 404));
+        }
+
+        logger.info(`Updating task ${taskId}: ${taskData.title || taskExists.title}`);
+
+        // Update task in Django API
+        const updatedTask = await djangoService.updateTask(taskId, taskData);
+
+        // Clear cache for this task if it exists
+        const cacheKey = `task_parameterization_${taskId}`;
+        if (cacheService.get(cacheKey)) {
+            logger.info(`Clearing cache for task ${taskId}`);
+            cacheService.del(cacheKey);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Task updated successfully',
+            data: updatedTask,
+        });
+    } catch (error) {
+        logger.error(`Error updating task: ${error.message}`);
+        next(new AppError(`Error updating task: ${error.message}`, 500));
+    }
+};
+
+/**
+ * @desc    Get a task by ID
+ * @route   GET /api/tasks/:taskId
+ * @access  Private
+ */
+exports.getTaskById = async (req, res, next) => {
+    try {
+        const { taskId } = req.params;
+
+        logger.info(`Getting task details for ${taskId}`);
+
+        // Get task from Django API
+        const task = await djangoService.getTaskById(taskId);
+
+        logger.info(`Task details fetched for ${taskId}`);
+
+        if (!task) {
+            return next(new AppError('Task not found', 404));
+        }
+
+        res.status(200).json({
+            success: true,
+            data: task,
+        });
+    } catch (error) {
+        logger.error(`Error fetching task: ${error.message}`);
+        next(new AppError(`Error fetching task: ${error.message}`, 500));
+    }
+};
