@@ -24,7 +24,8 @@ const ollamaClient = axios.create({
 // Add request interceptor for logging
 ollamaClient.interceptors.request.use(
     (config) => {
-        logger.debug(`Ollama API Request: ${config.method.toUpperCase()} ${config.url}`);
+        // Fix: Replace logger.debug with logger.debug.info
+        logger.debug.info(`Ollama API Request: ${config.method.toUpperCase()} ${config.url}`);
         return config;
     },
     (error) => {
@@ -36,7 +37,8 @@ ollamaClient.interceptors.request.use(
 // Add response interceptor for logging
 ollamaClient.interceptors.response.use(
     (response) => {
-        logger.debug(`Ollama API Response: ${response.status} from ${response.config.url}`);
+        // Fix: Replace any logger.debug calls with logger.debug.info
+        logger.debug.info(`Ollama API Response: ${response.status} from ${response.config.url}`);
         return response;
     },
     (error) => {
@@ -115,20 +117,70 @@ exports.generateJSONCompletion = async (prompt, expectedFormat = 'JSON object') 
         const completion = await exports.generateCompletion(prompt, {
             temperature: 0.1, // Lower temperature for more deterministic output
         });
+        
+        // Log the raw completion text for debugging
+        logger.debug.info(`Raw AI completion text: ${completion.substring(0, 500)}...`);
 
         // Try to extract and parse JSON from the completion
         let jsonStart = completion.indexOf('{');
         let jsonEnd = completion.lastIndexOf('}') + 1;
 
+        logger.debug.info(`JSON extraction indexes - start: ${jsonStart}, end: ${jsonEnd}`);
+
         if (jsonStart === -1 || jsonEnd === 0) {
+            logger.error(`No valid JSON found in AI response: "${completion.substring(0, 100)}..."`);
             throw new Error(`Response does not contain valid JSON. Expected ${expectedFormat}.`);
         }
 
         const jsonStr = completion.substring(jsonStart, jsonEnd);
-        return JSON.parse(jsonStr);
+        logger.debug.info(`Extracted JSON string: ${jsonStr}`);
+        
+        // Parse the JSON
+        const parsedJson = JSON.parse(jsonStr);
+        
+        // Validate that we have a proper object with expected fields
+        if (!parsedJson || typeof parsedJson !== 'object') {
+            logger.error(`Parsed JSON is not an object: ${JSON.stringify(parsedJson)}`);
+            throw new Error(`Invalid JSON structure in AI response. Expected ${expectedFormat}.`);
+        }
+
+        // Ensure the response has the expected structure for a task parameterization
+        if (expectedFormat === 'task parameterization JSON') {
+            // Extract task data from the prompt to use for fixing missing fields
+            const titleMatch = prompt.match(/Título:\s*([^\n]+)/);
+            const extractedTitle = titleMatch ? titleMatch[1].trim() : null;
+            
+            const defaultFields = {
+                tarea: extractedTitle || "No title provided",
+                tipo: "Unspecified",
+                palabras_clave: ["unspecified"],
+                complejidad: "Media", 
+                tiempo_estimado: "3 días" // Providing a more useful default
+            };
+            
+            // Fill in any missing fields with defaults
+            Object.keys(defaultFields).forEach(key => {
+                if (!parsedJson[key] || 
+                    (Array.isArray(parsedJson[key]) && parsedJson[key].length === 0) ||
+                    parsedJson[key] === "No title provided" ||
+                    parsedJson[key] === "No estimate provided") {
+                    
+                    logger.warn(`Missing or default field "${key}" in AI response, using better default value.`);
+                    parsedJson[key] = defaultFields[key];
+                }
+            });
+            
+            // Force the task title to be the actual title from the task data
+            if (extractedTitle && extractedTitle !== 'No title provided') {
+                parsedJson.tarea = extractedTitle;
+            }
+        }
+
+        return parsedJson;
     } catch (error) {
         if (error.name === 'SyntaxError') {
-            logger.error(`JSON parsing error: ${error.message}. Response: ${completion}`);
+            logger.error(`JSON parsing error: ${error.message}.`);
+            logger.debug.info(`Failed JSON: ${completion.substring(0, 300)}`);
             throw new Error(`Failed to parse AI response as ${expectedFormat}. Invalid JSON format.`);
         }
         throw error;
