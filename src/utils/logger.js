@@ -192,13 +192,17 @@ logger.httpLogger = {
 };
 
 // Debug Logger configuration - attach as property to logger
-logger.debug = {
-    info: (message, meta) => logger.info(message, meta),
-    error: (message, meta) => logger.error(message, meta),
-    warn: (message, meta) => logger.warn(message, meta),
-    debug: (message, meta) => logger.debug(message, meta),
-    http: (message, meta) => logger.http(message, meta),
-};
+const originalDebug = logger.debug;
+
+const debugLogger = (message, meta) => originalDebug(message, meta);
+debugLogger.info = (message, meta) => logger.info(message, meta);
+debugLogger.error = (message, meta) => logger.error(message, meta);
+debugLogger.warn = (message, meta) => logger.warn(message, meta);
+debugLogger.debug = (message, meta) => originalDebug(message, meta); // Use originalDebug to avoid recursion
+debugLogger.http = (message, meta) => logger.http(message, meta);
+
+// Replace the object with the function that has methods
+logger.debug = debugLogger;
 
 // Export logger directly to maintain compatibility with existing code
 module.exports = logger;
