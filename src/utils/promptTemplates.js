@@ -9,29 +9,56 @@
  * @returns {string} - Formatted prompt
  */
 exports.taskParameterizationPrompt = (task) => {
+    // Ensure task properties exist before trying to use them
+    const title = task?.title || 'No title provided';
+    const description = task?.description || 'No description available';
+    const projectName = task?.project?.name || 'No project specified';
+    const status = task?.statusDisplay || task?.status || 'No status specified';
+    const priority = task?.priorityDisplay || task?.priority || 'No priority specified';
+    const taskType = task?.typeDisplay || 'Unspecified';
+    const phase = task?.phaseDisplay || 'No phase specified';
+    const tags = Array.isArray(task?.tags) ? task.tags.join(', ') : (task?.tags || '');
+    const difficulty = task?.difficulty ? `${task.difficulty}/5` : 'Unspecified';
+    
     return `
 # Tarea de Proyecto
 Analiza la siguiente tarea y determina sus parámetros.
 
 ## Información de la Tarea
-Título: ${task.title}
-Descripción: ${task.description || 'No hay descripción disponible'}
-Proyecto: ${task.project?.name || 'No especificado'}
-Estado: ${task.status || 'No especificado'}
-Prioridad: ${task.priority || 'No especificada'}
+Título: ${title}
+Descripción: ${description}
+Proyecto: ${projectName}
+Estado: ${status}
+Prioridad: ${priority}
+Tipo: ${taskType}
+Fase: ${phase}
+Etiquetas: ${tags}
+Dificultad: ${difficulty}
 
 ## Instrucciones
 Analiza la información proporcionada y genera un análisis en formato JSON con los siguientes campos:
-1. "tarea": El título o nombre de la tarea (string)
-2. "tipo": El tipo o categoría de la tarea (string: "Frontend", "Backend", "DevOps", "Testing", "Documentación", etc.)
-3. "palabras_clave": Palabras clave relacionadas con la tarea (array de strings)
-4. "complejidad": Nivel de complejidad estimado (string: "Baja", "Media", "Alta")
-5. "tiempo_estimado": Tiempo estimado para completar la tarea (string, e.g. "3 días", "1 semana")
+1. "tarea": El título exacto de la tarea tal como se proporciona arriba (usar el valor "${title}")
+2. "tipo": El tipo o categoría de la tarea basado en la información proporcionada (string: "${taskType}" o derivar de la descripción si aplica)
+3. "palabras_clave": Un array de palabras clave relevantes para la tarea. Incluir las etiquetas proporcionadas y añadir otras relevantes.
+4. "complejidad": La complejidad estimada de la tarea (string: "Baja", "Media", "Alta"), basada en la dificultad y descripción proporcionadas
+5. "tiempo_estimado": Una estimación del tiempo necesario para completar la tarea (string, e.g. "${task.estimatedDuration || 3} días")
+
+IMPORTANTE: 
+- El campo "tarea" debe contener el título exacto de la tarea: "${title}"
+- El campo "tiempo_estimado" debe contener una estimación de tiempo con formato "X días" o "X semanas", etc.
+- Usa la información proporcionada (tipo, etiquetas, dificultad) para dar una respuesta más precisa.
 
 ## Formato de Respuesta
-Proporciona la respuesta solo en formato JSON válido, sin explicaciones adicionales.
+Proporciona únicamente un objeto JSON válido sin explicaciones adicionales ni texto de markdown.
 
-JSON:
+Ejemplo de respuesta esperada:
+{
+  "tarea": "${title}",
+  "tipo": "${taskType || 'Backend'}",
+  "palabras_clave": ["autenticación", "seguridad", "API", "JWT"],
+  "complejidad": "Media",
+  "tiempo_estimado": "${task.estimatedDuration ? task.estimatedDuration + ' días' : '5 días'}"
+}
 `;
 };
 
