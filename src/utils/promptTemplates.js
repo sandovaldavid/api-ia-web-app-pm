@@ -15,10 +15,17 @@ exports.taskParameterizationPrompt = (task) => {
     const projectName = task?.project?.name || 'No project specified';
     const status = task?.statusDisplay || task?.status || 'No status specified';
     const priority = task?.priorityDisplay || task?.priority || 'No priority specified';
-    const taskType = task?.typeDisplay || 'Unspecified';
+    const taskType = task?.typeDisplay || task?.type || 'Unspecified';
     const phase = task?.phaseDisplay || 'No phase specified';
     const tags = Array.isArray(task?.tags) ? task.tags.join(', ') : task?.tags || '';
     const difficulty = task?.difficulty ? `${task.difficulty}/5` : 'Unspecified';
+    const estimatedDuration = task?.estimatedDuration || 'No especificado';
+    const requirementDescription = task?.requirementDescription || 'No especificado';
+    const clarityOfRequirements = task?.clarityOfRequirements
+        ? `${Math.round(task.clarityOfRequirements * 100)}%`
+        : 'No especificado';
+    const startDate = task?.startDate || 'No especificado';
+    const endDate = task?.endDate || 'No especificado';
 
     return `
 # Tarea de Proyecto
@@ -34,6 +41,11 @@ Tipo: ${taskType}
 Fase: ${phase}
 Etiquetas: ${tags}
 Dificultad: ${difficulty}
+Duración estimada: ${estimatedDuration} días
+Fecha inicio: ${startDate}
+Fecha fin: ${endDate}
+Claridad de requisitos: ${clarityOfRequirements}
+Requerimiento asociado: ${requirementDescription}
 
 ## Instrucciones
 Analiza la información proporcionada y genera un análisis en formato JSON con los siguientes campos:
@@ -94,19 +106,41 @@ exports.resourceAssignmentPrompt = (task, resources) => {
                   .join('\n')
             : 'No hay recursos materiales disponibles.';
 
+    // Extract task details safely with fallbacks
+    const title = task?.title || 'No title provided';
+    const description = task?.description || 'No hay descripción disponible';
+    const projectName = task?.project?.name || 'No especificado';
+    const status = task?.statusDisplay || task?.status || 'No especificado';
+    const priority = task?.priorityDisplay || task?.priority || 'No especificada';
+    const taskType = task?.typeDisplay || task?.type || 'No especificado';
+    const difficulty = task?.difficulty ? `${task.difficulty}/5` : 'No especificado';
+    const tags = Array.isArray(task?.tags) && task.tags.length ? task.tags.join(', ') : 'No especificado';
+    const estimatedDuration = task?.estimatedDuration || 'No especificado';
+    const startDate = task?.startDate || 'No especificado';
+    const endDate = task?.endDate || 'No especificado';
+    const requirementDescription = task?.requirementDescription || 'No especificado';
+    const clarityOfRequirements = task?.clarityOfRequirements
+        ? `${Math.round(task.clarityOfRequirements * 100)}%`
+        : 'No especificado';
+
     return `
 # Asignación de Recursos
 Determina el recurso más adecuado para la siguiente tarea.
 
 ## Información de la Tarea
-Título: ${task.title}
-Descripción: ${task.description || 'No hay descripción disponible'}
-Proyecto: ${task.project?.name || 'No especificado'}
-Estado: ${task.status || 'No especificado'}
-Prioridad: ${task.priority || 'No especificada'}
-${task.type ? `Tipo: ${task.type}` : ''}
-${task.difficulty ? `Dificultad: ${task.difficulty}/5` : ''}
-${task.tags && task.tags.length ? `Etiquetas: ${task.tags.join(', ')}` : ''}
+Título: ${title}
+Descripción: ${description}
+Proyecto: ${projectName}
+Estado: ${status}
+Prioridad: ${priority}
+Tipo: ${taskType}
+Dificultad: ${difficulty}
+Etiquetas: ${tags}
+Duración estimada: ${estimatedDuration} días
+Fecha inicio: ${startDate}
+Fecha fin: ${endDate}
+Claridad de requisitos: ${clarityOfRequirements}
+Requerimiento asociado: ${requirementDescription}
 
 ## Recursos Humanos Disponibles
 ${humanResourcesText || 'No hay recursos humanos disponibles.'}
@@ -315,15 +349,28 @@ Si no sabes la respuesta, indícalo honestamente sin inventar información.
  * @returns {string} - Formatted prompt
  */
 exports.taskDocumentationPrompt = (task) => {
+    const title = task?.title || 'No title provided';
+    const description = task?.description || 'No hay descripción disponible';
+    const projectName = task?.project?.name || 'No especificado';
+    const status = task?.statusDisplay || task?.status || 'No especificado';
+    const taskType = task?.typeDisplay || task?.type || 'No especificado';
+    const requirementDescription = task?.requirementDescription || 'No especificado';
+    const clarityOfRequirements = task?.clarityOfRequirements
+        ? `${Math.round(task.clarityOfRequirements * 100)}%`
+        : 'No especificado';
+
     return `
 # Generación de Documentación para Tarea
 Genera documentación técnica para la siguiente tarea.
 
 ## Información de la Tarea
-Título: ${task.title}
-Descripción: ${task.description || 'No hay descripción disponible'}
-Proyecto: ${task.project?.name || 'No especificado'}
-Estado: ${task.status || 'No especificado'}
+Título: ${title}
+Descripción: ${description}
+Proyecto: ${projectName}
+Estado: ${status}
+Tipo: ${taskType}
+Claridad de requisitos: ${clarityOfRequirements}
+Requerimiento asociado: ${requirementDescription}
 
 ## Instrucciones
 Basándote en la información proporcionada, genera documentación técnica que incluya:
@@ -357,15 +404,32 @@ Tecnologías: ${(developer.technologies || []).join(', ')}
 `;
     }
 
+    const title = task?.title || 'No title provided';
+    const description = task?.description || 'No hay descripción disponible';
+    const projectName = task?.project?.name || 'No especificado';
+    const status = task?.statusDisplay || task?.status || 'No especificado';
+    const taskType = task?.typeDisplay || task?.type || 'No especificado';
+    const difficulty = task?.difficulty ? `${task.difficulty}/5` : 'No especificado';
+    const estimatedDuration = task?.estimatedDuration || 'No especificado';
+    const clarityOfRequirements = task?.clarityOfRequirements
+        ? `${Math.round(task.clarityOfRequirements * 100)}%`
+        : 'No especificado';
+    const tags = Array.isArray(task?.tags) && task.tags.length ? task.tags.join(', ') : 'No especificado';
+
     return `
 # Estimación de Tiempo para Tarea
 Realiza una estimación del tiempo necesario para completar la siguiente tarea.
 
 ## Información de la Tarea
-Título: ${task.title}
-Descripción: ${task.description || 'No hay descripción disponible'}
-Proyecto: ${task.project?.name || 'No especificado'}
-Estado: ${task.status || 'No especificado'}
+Título: ${title}
+Descripción: ${description}
+Proyecto: ${projectName}
+Estado: ${status}
+Tipo: ${taskType}
+Dificultad: ${difficulty}
+Etiquetas: ${tags}
+Duración estimada actual: ${estimatedDuration} días
+Claridad de requisitos: ${clarityOfRequirements}
 ${developerSection}
 ## Instrucciones
 Basándote en la información proporcionada, estima el tiempo que tomaría completar esta tarea.
