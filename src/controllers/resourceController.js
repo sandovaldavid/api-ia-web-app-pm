@@ -33,16 +33,54 @@ exports.assignResourceToTask = async (req, res, next) => {
             return next(new AppError('Task not found', 404));
         }
 
-        // Fetch available resources
-        const resources = await djangoService.getResources();
+        // Fetch available human resources directly using the dedicated endpoint
+        const humanResources = await djangoService.getHumanResources();
+
+        // Check if human resources are available
+        if (humanResources.length === 0) {
+            return next(new AppError('No hay recursos humanos disponibles para asignar a esta tarea', 422));
+        }
+
+        // Fetch available material resources
+        const materialResources = await djangoService.getMaterialResources();
+
+        // Combine resources for the prompt template
+        const allResources = [...humanResources, ...materialResources];
+
+        // Log available resources
+        logger.info(
+            `Found ${humanResources.length} available human resources and ${materialResources.length} material resources`
+        );
 
         // Generate prompt for resource assignment
-        const prompt = promptTemplates.resourceAssignmentPrompt(task, resources);
+        const prompt = promptTemplates.resourceAssignmentPrompt(task, allResources);
 
         // Generate response using Ollama
         logger.info(`Assigning resources for task ${taskId}: ${task.title}`);
 
         const response = await ollamaService.generateJSONCompletion(prompt, 'resource assignment JSON');
+
+        // Validate that the response includes at least one human resource
+        let validResponse = true;
+        if (!response.recurso_asignado || !response.recurso_asignado.desarrollador) {
+            logger.warn('AI response did not include a human resource assignment');
+            validResponse = false;
+        }
+
+        // If the response isn't valid, assign the most suitable human resource manually
+        if (!validResponse && humanResources.length > 0) {
+            // Simple fallback - assign the first available human resource
+            logger.info('Falling back to default resource assignment');
+            response.recurso_asignado = {
+                desarrollador: humanResources[0].name,
+                nivel: humanResources[0].experience || 'No especificado',
+                tecnología:
+                    humanResources[0].technologies && humanResources[0].technologies.length > 0
+                        ? humanResources[0].technologies[0]
+                        : 'No especificado',
+                herramientas: [],
+            };
+        }
 
         // Cache the result
         cacheService.set(cacheKey, response);
@@ -79,11 +117,23 @@ exports.assignResourcesForProject = async (req, res) => {
         // Fetch tasks for the project
         const tasks = await djangoService.getTasksByProject(projectId);
 
-        // Fetch available resources
-        const resources = await djangoService.getResources();
+        // Fetch available resources using dedicated endpoints
+        const humanResources = await djangoService.getHumanResources();
+        const materialResources = await djangoService.getMaterialResources();
+
+        // Combine resources for the prompt template
+        const allResources = [...humanResources, ...materialResources];
+
+        // Check if human resources are available
+        if (humanResources.length === 0) {
+            return res.status(422).json({
+                success: false,
+                error: 'No hay recursos humanos disponibles para asignar a este proyecto',
+            });
+        }
 
         // Generate prompt for project resource assignment
-        const prompt = promptTemplates.projectResourceAssignmentPrompt(project, tasks, resources);
+        const prompt = promptTemplates.projectResourceAssignmentPrompt(project, tasks, allResources);
 
         // Generate response using Ollama
         logger.info(`Assigning resources for project ${projectId}: ${project.name}`);
