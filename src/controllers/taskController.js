@@ -34,12 +34,16 @@ exports.parameterizeTask = async (req, res, next) => {
             return next(new AppError('Task not found', 404));
         }
 
-        // Log task details to debug potential issues
-        logger.debug.info(`Mapped task data: ${JSON.stringify(task)}`);
+        // Log task details for debugging to ensure we have the correct fields
+        logger.debug.info(`Task fields available: ${Object.keys(task).join(', ')}`);
 
-        // Check for required task properties
+        // Enhanced validation for required fields
         if (!task.title) {
             logger.warn(`Task ${taskId} has no title, which may cause inaccurate parameterization`);
+        }
+
+        if (!task.description) {
+            logger.warn(`Task ${taskId} has no description, which may result in limited analysis`);
         }
 
         // Generate prompt for task parameterization
