@@ -36,35 +36,43 @@ class DjangoService {
                 return null;
             }
 
+            // Get actual response data (may be nested under 'data' property)
+            const taskData = response.data.data || response.data;
+
             // Map Django task fields to expected format in our application
             const task = {
-                id: response.data.idtarea,
-                title: response.data.nombretarea,
-                description: response.data.descripcion,
-                status: response.data.estado,
-                statusDisplay: response.data.estado_display,
-                priority: response.data.prioridad,
-                priorityDisplay: response.data.prioridad_display,
-                type: response.data.tipo_tarea,
-                typeDisplay: response.data.tipo_tarea_nombre,
-                startDate: response.data.fechainicio,
-                endDate: response.data.fechafin,
-                estimatedDuration: response.data.duracionestimada,
-                actualDuration: response.data.duracionactual,
-                difficulty: response.data.dificultad,
-                phase: response.data.fase,
-                phaseDisplay: response.data.fase_nombre,
-                clarityOfRequirements: response.data.claridad_requisitos,
-                estimatedSize: response.data.tamaño_estimado,
-                estimatedCost: response.data.costoestimado,
-                actualCost: response.data.costoactual,
-                requirementId: response.data.idrequerimiento,
-                requirementDescription: response.data.requerimiento_descripcion,
-                createdAt: response.data.fechacreacion,
-                updatedAt: response.data.fechamodificacion,
-                tags: response.data.tags ? response.data.tags.split(',').map((tag) => tag.trim()) : [],
+                id: taskData.id || taskData.idtarea,
+                title: taskData.title || taskData.nombretarea,
+                description: taskData.description || taskData.descripcion,
+                status: taskData.status || taskData.estado,
+                statusDisplay: taskData.statusDisplay || taskData.estado_display,
+                priority: taskData.priority || taskData.prioridad,
+                priorityDisplay: taskData.priorityDisplay || taskData.prioridad_display,
+                type: taskData.type || taskData.tipo_tarea,
+                typeDisplay: taskData.typeDisplay || taskData.tipo_tarea_nombre,
+                startDate: taskData.startDate || taskData.fechainicio,
+                endDate: taskData.endDate || taskData.fechafin,
+                estimatedDuration: taskData.estimatedDuration || taskData.duracionestimada,
+                actualDuration: taskData.actualDuration || taskData.duracionactual,
+                difficulty: taskData.difficulty || taskData.dificultad,
+                phase: taskData.phase || taskData.fase,
+                phaseDisplay: taskData.phaseDisplay || taskData.fase_nombre,
+                clarityOfRequirements: taskData.clarityOfRequirements || taskData.claridad_requisitos,
+                estimatedSize: taskData.estimatedSize || taskData.tamaño_estimado,
+                estimatedCost: taskData.estimatedCost || taskData.costoestimado,
+                actualCost: taskData.actualCost || taskData.costoactual,
+                requirementId: taskData.requirementId || taskData.idrequerimiento,
+                requirementDescription: taskData.requirementDescription || taskData.requerimiento_descripcion,
+                createdAt: taskData.createdAt || taskData.fechacreacion,
+                updatedAt: taskData.updatedAt || taskData.fechamodificacion,
+                // Handle tags that could be array or comma-separated string
+                tags: Array.isArray(taskData.tags)
+                    ? taskData.tags
+                    : taskData.tags
+                      ? taskData.tags.split(',').map((tag) => tag.trim())
+                      : [],
                 project: {
-                    name: response.data.proyecto_nombre,
+                    name: taskData.project?.name || taskData.proyecto_nombre || 'No especificado',
                 },
             };
 
