@@ -17,9 +17,9 @@ exports.taskParameterizationPrompt = (task) => {
     const priority = task?.priorityDisplay || task?.priority || 'No priority specified';
     const taskType = task?.typeDisplay || 'Unspecified';
     const phase = task?.phaseDisplay || 'No phase specified';
-    const tags = Array.isArray(task?.tags) ? task.tags.join(', ') : (task?.tags || '');
+    const tags = Array.isArray(task?.tags) ? task.tags.join(', ') : task?.tags || '';
     const difficulty = task?.difficulty ? `${task.difficulty}/5` : 'Unspecified';
-    
+
     return `
 # Tarea de Proyecto
 Analiza la siguiente tarea y determina sus parámetros.
@@ -69,14 +69,30 @@ Ejemplo de respuesta esperada:
  * @returns {string} - Formatted prompt
  */
 exports.resourceAssignmentPrompt = (task, resources) => {
-    const resourcesText = resources
+    // Separate human and material resources for better prompting
+    const humanResources = resources.filter((r) => r.isHuman && r.isAvailable);
+    const materialResources = resources.filter((r) => !r.isHuman && r.isAvailable);
+
+    // Format human resources text
+    const humanResourcesText = humanResources
         .map(
             (r) =>
-                `- ${r.name}: ${r.role || 'No role'} (${r.experience || 'No experience'}) - Tecnologías: ${(
+                `- ${r.name}: ${r.role || 'No role'} (Experiencia: ${r.experience || 'No especificada'}, Disponibilidad: ${r.availability || 'No especificada'}) - Tecnologías: ${(
                     r.technologies || []
                 ).join(', ')}`
         )
         .join('\n');
+
+    // Format material resources text if available
+    const materialResourcesText =
+        materialResources.length > 0
+            ? materialResources
+                  .map(
+                      (r) =>
+                          `- ${r.name}: ${r.type || 'Material'} (Disponibilidad: ${r.availability || 'No especificada'})`
+                  )
+                  .join('\n')
+            : 'No hay recursos materiales disponibles.';
 
     return `
 # Asignación de Recursos
@@ -88,21 +104,29 @@ Descripción: ${task.description || 'No hay descripción disponible'}
 Proyecto: ${task.project?.name || 'No especificado'}
 Estado: ${task.status || 'No especificado'}
 Prioridad: ${task.priority || 'No especificada'}
+${task.type ? `Tipo: ${task.type}` : ''}
+${task.difficulty ? `Dificultad: ${task.difficulty}/5` : ''}
+${task.tags && task.tags.length ? `Etiquetas: ${task.tags.join(', ')}` : ''}
 
-## Recursos Disponibles
-${resourcesText}
+## Recursos Humanos Disponibles
+${humanResourcesText || 'No hay recursos humanos disponibles.'}
+
+## Recursos Materiales Disponibles
+${materialResourcesText}
 
 ## Instrucciones
-Analiza la tarea y los recursos disponibles para determinar cuál es el recurso más adecuado para esta tarea.
-Considera habilidades técnicas, experiencia, disponibilidad y otros factores relevantes.
+Analiza la tarea y los recursos disponibles para determinar:
+1. El recurso humano más adecuado para esta tarea basándote en sus habilidades técnicas, experiencia y disponibilidad.
+2. El recurso humano DEBE ser asignado de la lista de recursos humanos disponibles.
+3. La asignación debe maximizar la eficiencia y calidad del trabajo.
 
 ## Formato de Respuesta
 Proporciona la respuesta en formato JSON con los siguientes campos:
 1. "tarea": Título de la tarea
 2. "recurso_asignado": Objeto con la siguiente estructura:
-   - "desarrollador": Nombre del recurso asignado
+   - "desarrollador": Nombre del recurso humano asignado (OBLIGATORIO)
    - "nivel": Nivel del desarrollador ("Junior", "Mid", "Senior")
-   - "tecnología": Tecnología principal requerida
+   - "tecnología": Tecnología principal requerida para la tarea
    - "herramientas": Array de herramientas necesarias para la tarea
 
 JSON:
