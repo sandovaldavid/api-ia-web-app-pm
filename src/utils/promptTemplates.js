@@ -52,13 +52,18 @@ Analiza la información proporcionada y genera un análisis en formato JSON con 
 1. "tarea": El título exacto de la tarea tal como se proporciona arriba (usar el valor "${title}")
 2. "tipo": El tipo o categoría de la tarea basado en la información proporcionada (string: "${taskType}" o derivar de la descripción si aplica)
 3. "palabras_clave": Un array de palabras clave relevantes para la tarea. Incluir las etiquetas proporcionadas y añadir otras relevantes.
-4. "complejidad": La complejidad estimada de la tarea (string: "Baja", "Media", "Alta"), basada en la dificultad y descripción proporcionadas
+4. "complejidad": La complejidad estimada de la tarea (string: "Muy Baja = 1", "Baja = 2", "Media = 3", "Alta = 4", "Muy Alta = 5"), basada en la dificultad y descripción proporcionadas
 5. "tiempo_estimado": Una estimación del tiempo necesario para completar la tarea (string, e.g. "${task.estimatedDuration || 3} días")
+6. "claridad_requisitos": El nivel de claridad de los requisitos expresado como porcentaje (string, e.g. "80%")
+7. "puntos_historia": La estimación en puntos de historia usando la secuencia de Fibonacci (1, 2, 3, 5, 8, 13, 21) basada en la complejidad y el tamaño de la tarea
 
 IMPORTANTE: 
 - El campo "tarea" debe contener el título exacto de la tarea: "${title}"
 - El campo "tiempo_estimado" debe contener una estimación de tiempo con formato "X días" o "X semanas", etc.
 - Usa la información proporcionada (tipo, etiquetas, dificultad) para dar una respuesta más precisa.
+- Las palabras clave deben ser relevantes para la tarea y pueden incluir tecnologías, conceptos o acciones específicas, ademas de ello recuerda que son palabras clave y no frases completas. Ademas esas palabras clavese deven de sacar de la descripción de la tarea.
+- Para "puntos_historia" debes asignar un valor de la serie de Fibonacci (1, 2, 3, 5, 8, 13, 21) según la complejidad y tamaño percibido.
+- Para "claridad_requisitos" usa el valor proporcionado si existe o estímalo basado en la descripción.
 
 ## Formato de Respuesta
 Proporciona únicamente un objeto JSON válido sin explicaciones adicionales ni texto de markdown.
@@ -67,9 +72,10 @@ Ejemplo de respuesta esperada:
 {
   "tarea": "${title}",
   "tipo": "${taskType || 'Backend'}",
-  "palabras_clave": ["autenticación", "seguridad", "API", "JWT"],
-  "complejidad": "Media",
-  "tiempo_estimado": "${task.estimatedDuration ? task.estimatedDuration + ' días' : '5 días'}"
+  "palabras_clave": ["palabras claves extraidas de la descripción"],
+  "complejidad": "complejidad evaluada en base a tus criterios",
+  "claridad_requisitos": "75%",
+  "puntos_historia": "story points estimados por ti"
 }
 `;
 };
